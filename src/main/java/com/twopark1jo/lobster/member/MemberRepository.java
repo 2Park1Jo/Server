@@ -10,11 +10,11 @@ public interface MemberRepository extends JpaRepository<Member, String> {
     public Member getMember(@Param("email") String email);
 
     //중복아이디 확인
-    @Query(value = "SELECT EXISTS(SELECT email FROM member WHERE email=:email)", nativeQuery = true)
+    @Query(value = "SELECT EXISTS(SELECT email FROM member m WHERE m.email=:email)", nativeQuery = true)
     public int checkDuplicateEmail(@Param("email") String email);
 
-    @Query(value =
-            "SELECT SELECT EXISTS(SELECT email FROM member " +
+    //로그인 확인
+    @Query(value = "SELECT EXISTS(SELECT email FROM member " +
             "WHERE email=:email and password=:password)", nativeQuery = true)
     public int checkLogin(@Param("email") String email, @Param("password") String password);
 }
