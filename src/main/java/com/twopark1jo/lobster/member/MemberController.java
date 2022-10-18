@@ -3,6 +3,7 @@ package com.twopark1jo.lobster.member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -31,5 +32,10 @@ public class MemberController {
     public void signUp(@RequestBody Member member){
         memberRepository.save(new Member(member.getEmail(), member.getPassword(),
                 member.getName()));
+    }
+
+    @GetMapping("/allmember")
+    public List<Member> getAllMembers(){
+        return memberRepository.findAll();
     }
 }

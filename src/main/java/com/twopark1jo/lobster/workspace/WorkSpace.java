@@ -13,7 +13,7 @@ import javax.persistence.Table;
 @Getter
 @Setter
 @ToString
-public class WorkSpace {
+public class Workspace {
     @Id
     @Column(name = "workspace_id")
     private String workspaceId;
@@ -27,7 +27,7 @@ public class WorkSpace {
     @Column(name = "deadline")
     private String deadline;
 
-    public WorkSpace(String workspaceId, String workspaceName, String goal, String deadline) {
+    public Workspace(String workspaceId, String workspaceName, String goal, String deadline) {
         this.workspaceId = workspaceId;
         this.workspaceName = workspaceName;
         this.goal = goal;

@@ -1,7 +1,5 @@
 package com.twopark1jo.lobster.workspace;
 
-import com.twopark1jo.lobster.member.Member;
-import com.twopark1jo.lobster.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,12 +9,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/workspace")
 @RequiredArgsConstructor
-public class WorkSpaceController {
+public class WorkspaceController {
 
-    private final WorkSpaceRepository workSpaceRepository;
+    private final WorkspaceRepository workSpaceRepository;
 
     @GetMapping("/information")
-    public WorkSpace getWorkSpace(@RequestParam("id") String workspaceId){
+    public Workspace getWorkSpace(@RequestParam("id") String workspaceId){
         return workSpaceRepository.getWorkSpace(workspaceId);
     }
 }
