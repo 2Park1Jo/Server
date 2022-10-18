@@ -8,13 +8,13 @@ import javax.persistence.*;
 @Table(name = "workspace_member")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Data
-//@IdClass(WorkspaceMemberPK.class)
+@IdClass(WorkspaceMemberPK.class)
 public class WorkspaceMember {
     @Id
     @Column(name = "email")
     private String email;
 
-    //@Id
+    @Id
     @Column(name = "workspace_id")
     private String workspaceId;
 
