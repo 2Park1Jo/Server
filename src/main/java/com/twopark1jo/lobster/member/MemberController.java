@@ -14,16 +14,16 @@ public class MemberController {
     private final MemberRepository memberRepository;
 
     @GetMapping("/profile")
-    public Member getMember(@RequestParam("email") String email){
-        return memberRepository.getMember(email);
+    public Optional<Member> getMember(@RequestParam("email") String email){
+        return memberRepository.findById(email);
     }
 
-    @GetMapping("/checkduplicateid")
-    public int checkDuplicateEmail(@RequestParam("email") String email){
-        return memberRepository.checkDuplicateEmail(email);
+    @GetMapping("/duplicateid")
+    public boolean checkDuplicateEmail(@RequestParam("email") String email){
+        return memberRepository.existsById(email);
     }
 
-    @PostMapping("/checklogin")
+    @PostMapping("/login")
     public int checkLogin(@RequestBody Member member){
         return memberRepository.checkLogin(member.getEmail(), member.getPassword());
     }
@@ -35,7 +35,7 @@ public class MemberController {
     }
 
     @GetMapping("/allmember")
-    public List<Member> getAllMembers(){
+    public List<Member> getAllMemberList(){
         return memberRepository.findAll();
     }
 }

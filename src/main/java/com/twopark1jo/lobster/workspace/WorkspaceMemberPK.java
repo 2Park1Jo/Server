@@ -7,8 +7,6 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class WorkspaceMemberPK implements Serializable {
     private String memberId;
     private String workspaceId;
