@@ -11,7 +11,4 @@ public interface WorkSpaceRepository extends JpaRepository<WorkSpace, String> {
     @Query(value = "SELECT * FROM workspace w WHERE w.workspace_id=:workspace_id", nativeQuery = true)
     public WorkSpace getWorkSpace(@Param("workspace_id") String workspaceId);
 
-
-
-
 }
