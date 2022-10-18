@@ -1,4 +1,4 @@
-package com.twopark1jo.lobster;
+package com.twopark1jo.lobster.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
