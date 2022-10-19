@@ -21,8 +21,4 @@ public class WorkspaceController {
         return workSpaceRepository.findById(workspaceId);
     }
 
-    @GetMapping("/member")
-    public Optional<WorkspaceMember> getWorkSpaceMember(@RequestParam("workspaceId") String workspaceId){
-        return workspaceMemberRepository.findAllById();
-    }
 }
