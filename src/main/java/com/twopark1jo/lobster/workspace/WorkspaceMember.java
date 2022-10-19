@@ -7,6 +7,7 @@ import javax.persistence.*;
 @Entity(name = "workspace_member")
 @Table(name = "workspace_member")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Data
 @IdClass(WorkspaceMemberPK.class)
 public class WorkspaceMember {

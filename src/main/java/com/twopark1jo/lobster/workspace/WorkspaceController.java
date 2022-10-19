@@ -14,9 +14,15 @@ import java.util.Optional;
 public class WorkspaceController {
 
     private final WorkspaceRepository workSpaceRepository;
+    private final WorkspaceMemberRepository workspaceMemberRepository;
 
     @GetMapping("/information")
     public Optional<Workspace> getWorkSpace(@RequestParam("id") String workspaceId){
         return workSpaceRepository.findById(workspaceId);
+    }
+
+    @GetMapping("/member")
+    public Optional<WorkspaceMember> getWorkSpaceMember(@RequestParam("workspaceId") String workspaceId){
+        return workspaceMemberRepository.findAllById();
     }
 }
