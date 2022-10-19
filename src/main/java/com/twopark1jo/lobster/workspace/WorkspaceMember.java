@@ -12,12 +12,13 @@ import javax.persistence.*;
 @IdClass(WorkspaceMemberPK.class)
 public class WorkspaceMember {
     @Id
+    @Column(name = "workspace_id")
+    private String workspaceId;
+
+    @Id
     @Column(name = "email")
     private String email;
 
-    @Id
-    @Column(name = "workspace_id")
-    private String workspaceId;
 
     @Column(name = "member_name")
     private String memberName;
