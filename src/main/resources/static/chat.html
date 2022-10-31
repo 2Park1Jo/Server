@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<meta charset="UTF-8">
+<th:block th:replace="~{/layout/basic :: setContent(~{this :: content})}">
+    <th:block th:fragment="content">
+
+        <div class="container">
+            <div class="col-6">
+                <h1>투박한조</h1>
+            </div>
+            <div>
+                <div id="msgArea" class="col"></div>
+                <div class="col-6">
+                    <div class="input-group mb-3">
+                        <input type="text" id="msg" class="form-control">
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" type="button" id="button-send">전송</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6"></div>
+        </div>
+
+
+        <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
+    </th:block>
+</th:block>
+
+<script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+<script th:inline="javascript">
+$(document).ready(function(){
+
+    //임의 데이터
+    var departmentName = "투박한조";
+    var departmentId = "12345";
+    var email = "ming-taro"
+
+    console.log(departmentName + ", " + departmentId + ", " + email);
+
+    //stomp client 연결
+    var sockJs = new SockJS("/chat");
+    var stomp = Stomp.over(sockJs);
+
+    stomp.connect({}, function (){
+       console.log("STOMP Connection")
+
+       //메세지 수신시 "/sub/chat/department/{departmentId}"주소로 수신됨
+       stomp.subscribe("/sub/chat/department/" + departmentId, function (chat) {
+           var result = JSON.parse(chat.body);
+
+           var user = result.email;
+           var str = '';
+
+           str = "<div class='col-6'>";
+           str += "<div class='alert alert-secondary'>";
+           str += "<b>" + user + " : " + result.content + "</b>";
+           str += "</div></div>";
+           $("#msgArea").append(str);
+       });
+
+       stomp.send('/pub/chat/enter', {}, JSON.stringify({departmentId: departmentId, email: email}))
+    });
+
+    $("#button-send").on("click", function(e){
+        var msg = document.getElementById("msg");
+
+        console.log(email + ":" + msg.value);
+        stomp.send('/pub/chat/message', {}, JSON.stringify({departmentId: departmentId, email: email, content: msg.value}));
+        msg.value = '';
+    });
+});
+</script>
+
+</html>
