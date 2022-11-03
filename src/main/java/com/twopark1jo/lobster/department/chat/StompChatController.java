@@ -1,10 +1,12 @@
-package com.twopark1jo.lobster.chatting;
+package com.twopark1jo.lobster.department.chat;
 
+import com.twopark1jo.lobster.department.chat.ChatMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
+
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor

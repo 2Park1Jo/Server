@@ -1,4 +1,4 @@
-package com.twopark1jo.lobster.chatting;
+package com.twopark1jo.lobster.department.chat;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

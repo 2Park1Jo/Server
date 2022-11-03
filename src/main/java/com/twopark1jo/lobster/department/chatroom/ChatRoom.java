@@ -1,13 +1,11 @@
-package com.twopark1jo.lobster.chatting;
+package com.twopark1jo.lobster.department.chatroom;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 @Getter
 @Setter

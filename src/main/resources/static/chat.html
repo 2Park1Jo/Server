@@ -41,6 +41,7 @@ $(document).ready(function(){
     console.log(departmentName + ", " + departmentId + ", " + email);
 
     //stomp client 연결
+    //http://ec2-15-164-99-243.ap-northeast-2.compute.amazonaws.com:8080/chat
     var sockJs = new SockJS("/chat");
     var stomp = Stomp.over(sockJs);
 
