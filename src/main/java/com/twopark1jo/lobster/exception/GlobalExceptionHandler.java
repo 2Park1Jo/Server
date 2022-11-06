@@ -49,4 +49,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         
         return new ResponseEntity(errorResponse, HttpStatus.valueOf(exception.getErrorCode().getStatus()));
     }
+
+    @ExceptionHandler({DepartmentException.class})
+    protected ResponseEntity handleDepartmentException(DepartmentException exception, WebRequest request){
+        ErrorResponse errorResponse = new ErrorResponse().builder()
+                .timestamp(new Date())
+                .message(exception.getErrorCode().getMessage())
+                .details(request.getDescription(false))
+                .build();
+
+        return new ResponseEntity(errorResponse, HttpStatus.valueOf(exception.getErrorCode().getStatus()));
+    }
 }

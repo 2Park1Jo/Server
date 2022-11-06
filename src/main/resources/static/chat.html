@@ -36,19 +36,19 @@ $(document).ready(function(){
     //임의 데이터
     var departmentName = "투박한조";
     var departmentId = "12345";
-    var email = "ming-taro"
+    var email = "ming-taro";
 
     console.log(departmentName + ", " + departmentId + ", " + email);
 
     //stomp client 연결
     //http://ec2-15-164-99-243.ap-northeast-2.compute.amazonaws.com:8080/chat
-    var sockJs = new SockJS("/chat");
+    var sockJs = new SockJS("http://ec2-15-164-99-243.ap-northeast-2.compute.amazonaws.com:8080/chat");
     var stomp = Stomp.over(sockJs);
 
-    stomp.connect({}, function (){
-       console.log("STOMP Connection")
+    stomp.connect({}, onConnected, onError);
 
-       //메세지 수신시 "/sub/chat/department/{departmentId}"주소로 수신됨
+    function onConnected() {
+        //메세지 수신시 "/sub/chat/department/{departmentId}"주소로 수신됨
        stomp.subscribe("/sub/chat/department/" + departmentId, function (chat) {
            var result = JSON.parse(chat.body);
 
@@ -63,7 +63,17 @@ $(document).ready(function(){
        });
 
        stomp.send('/pub/chat/enter', {}, JSON.stringify({departmentId: departmentId, email: email}))
-    });
+    }
+
+    function onError(error) {
+        connectingElement.textContent = 'Could not connect to WebSocket server. Please refresh this page to try again!';
+        connectingElement.style.color = 'red';
+    }
+
+
+    function onMessageReceived(payload) {
+        var message = JSON.parse(payload.body);
+    }
 
     $("#button-send").on("click", function(e){
         var msg = document.getElementById("msg");

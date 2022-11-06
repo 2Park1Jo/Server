@@ -7,7 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 @AllArgsConstructor
 @Getter
 public enum ErrorCode {
-    EXISTED_EMAIL(409, "이미 존재하는 회원입니다.");
+    EXISTED_EMAIL(409, "이미 존재하는 회원입니다."),
+    EXISTED_DEPARTMENT(409, "이미 존재하는 부서입니다");
 
     private final int status;
     private final String message;
