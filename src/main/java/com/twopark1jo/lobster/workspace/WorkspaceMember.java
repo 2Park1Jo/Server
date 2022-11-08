@@ -19,7 +19,6 @@ public class WorkspaceMember {
     @Column(name = "email")
     private String email;
 
-
     @Column(name = "member_name")
     private String memberName;
 

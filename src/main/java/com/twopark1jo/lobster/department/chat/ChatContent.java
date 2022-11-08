@@ -13,9 +13,7 @@ import java.sql.Timestamp;
 @Setter
 @ToString
 public class ChatContent {
-    public enum MessageType{
-        ENTER, COMM
-    }
+
     @Id
     @Column(name = "chat_id")
     private String chatId;       //채팅 아이디
@@ -37,10 +35,4 @@ public class ChatContent {
 
     @Column(name = "link")
     private String link;          //파일 링크
-
-    public ChatContent(MessageType messageType, String departmentId, String email, String content) {
-        this.departmentId = departmentId;
-        this.email = email;
-        this.content = content;
-    }
 }

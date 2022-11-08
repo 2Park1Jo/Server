@@ -19,15 +19,19 @@ public class Department {
     @Id
     @Column(name = "department_id")
     private String departmentId;
+
     @Column(name = "workspace_id")
     @NotBlank
     private String workspaceId;
+
     @Column(name = "department_name")
     @NotBlank
     private String departmentName;
+
     @Column(name = "goal")
     @NotBlank
     private String goal;
+
     @Column(name = "deadline")
     @NotBlank
     private String deadline;

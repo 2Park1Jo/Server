@@ -9,4 +9,6 @@ public interface DepartmentRepository extends JpaRepository<Department, String> 
 
     @Query(value = "SELECT * FROM department WHERE workspace_id=:workspaceId;", nativeQuery = true)
     List<Department> findAllByWorkspaceId(String workspaceId);
+
+    List<Department> finAllByEmail(String email);
 }
