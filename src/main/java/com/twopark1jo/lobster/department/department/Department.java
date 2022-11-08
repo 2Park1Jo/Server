@@ -11,6 +11,7 @@ import java.util.Set;
 @Entity(name = "department")
 @Table(name = "department")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Getter
 @Setter
 @ToString
@@ -30,15 +31,4 @@ public class Department {
     @Column(name = "deadline")
     @NotBlank
     private String deadline;
-
-    @Transient
-    private Set<WebSocketSession> sessions = new HashSet<>();
-
-    public Department(String departmentId, String workspaceId, String departmentName, String goal, String deadline) {
-        this.departmentId = departmentId;
-        this.workspaceId = workspaceId;
-        this.departmentName = departmentName;
-        this.goal = goal;
-        this.deadline = deadline;
-    }
 }

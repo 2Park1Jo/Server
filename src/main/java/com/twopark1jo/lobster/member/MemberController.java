@@ -7,12 +7,15 @@ import com.twopark1jo.lobster.exception.MemberException;
 import com.twopark1jo.lobster.utility.Constants;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.bcel.Const;
+import org.hibernate.metamodel.model.domain.internal.MapMember;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.yaml.snakeyaml.scanner.Constant;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
@@ -37,8 +40,11 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity checkLogin(@RequestBody Member member){
+    public ResponseEntity checkLogin(@RequestBody Member member){ //HttpServletRequest request){
         int isMember = memberRepository.checkLogin(member.getEmail(), member.getPassword());
+
+        //HttpSession session = request.getSession();
+        //session.setAttribute("email", member.getEmail());   //세션 저장
 
         if(isMember == Constants.IS_MEMBER){
             return new ResponseEntity<>(HttpStatus.OK);
@@ -46,6 +52,15 @@ public class MemberController {
 
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity logout(@RequestBody Member member, HttpServletRequest request){
+        //HttpSession session = request.getSession();
+        //session.invalidate();    //세션 삭제
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 
     @PostMapping("/signup")
     public ResponseEntity signUp(@Valid @RequestBody Member member){
