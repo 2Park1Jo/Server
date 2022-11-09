@@ -8,7 +8,7 @@ import java.io.Serializable;
 
 @Data
 @NoArgsConstructor
-public class MemberPK implements Serializable {
+public class DepartmentMemberPK implements Serializable {
 
     @Column(name = "department_id")
     private String departmentId;
