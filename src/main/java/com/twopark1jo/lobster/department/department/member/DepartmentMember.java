@@ -1,6 +1,5 @@
 package com.twopark1jo.lobster.department.department.member;
 
-import com.twopark1jo.lobster.workspace.WorkspaceMemberPK;
 import lombok.*;
 
 import javax.persistence.*;
@@ -12,8 +11,8 @@ import javax.persistence.*;
 @Setter
 @ToString
 @Data
-@IdClass(MemberPK.class)
-public class Member {
+@IdClass(DepartmentMemberPK.class)
+public class DepartmentMember {
     @Id
     @Column(name = "department_id")
     private String departmentId;

@@ -28,11 +28,11 @@ public class Department {
     @NotBlank
     private String departmentName;
 
-    @Column(name = "goal")
+    @Column(name = "department_goal")
     @NotBlank
-    private String goal;
+    private String departmentGoal;
 
-    @Column(name = "deadline")
+    @Column(name = "department_deadline")
     @NotBlank
-    private String deadline;
+    private String departmentDeadline;
 }

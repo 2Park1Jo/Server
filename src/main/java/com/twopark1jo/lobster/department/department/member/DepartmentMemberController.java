@@ -17,27 +17,23 @@ import java.util.List;
 @RestController
 @RequestMapping("/department")
 @RequiredArgsConstructor
-public class MemberController {
-    private final MemberRepository memberRepository;
+public class DepartmentMemberController {
+    private final DepartmentMemberRepository departmentMemberRepository;
     private final DepartmentRepository departmentRepository;
     @Autowired
     private GlobalExceptionHandler exceptionHandler;
 
     //해당 부서의 모든 멤버 목록
-    @GetMapping("/member-list")
-    public ResponseEntity<List<Member>> getMemberByDepartment(@RequestParam String departmentId){
+    @GetMapping("/members")
+    public ResponseEntity<List<DepartmentMember>> getMemberByDepartment(@RequestParam String departmentId){
         boolean isDepartment = departmentRepository.existsById(departmentId);
 
         if(isDepartment){
-            return new ResponseEntity<>(memberRepository.findAllByDepartmentId(departmentId), HttpStatus.OK);
+            return new ResponseEntity<>(departmentMemberRepository.findAllByDepartmentId(departmentId), HttpStatus.OK);
         }
 
         return ResponseEntity.notFound().build();
     }
 
-    @GetMapping("/member/department-list")
-    public ResponseEntity<List<Department>> getDepartmentByMember(@RequestParam String email){
-        return new ResponseEntity<>(departmentRepository.finAllByEmail(email), HttpStatus.OK);
-    }
 }
 

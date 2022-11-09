@@ -18,7 +18,7 @@ public class WorkspaceController {
     private final WorkspaceRepository workSpaceRepository;
     private final WorkspaceMemberRepository workspaceMemberRepository;
 
-    @GetMapping("/information")
+    @GetMapping("/details")
     public Optional<Workspace> getWorkSpace(@RequestParam("id") String workspaceId){
         return workSpaceRepository.findById(workspaceId);
     }
