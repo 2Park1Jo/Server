@@ -64,7 +64,8 @@ public class DepartmentController {
 
     //회원이 속한 워크스페이스 부서 목록
     @GetMapping("member/{email}/workspace/{workspaceId}/departments")
-    public ResponseEntity<List<Department>> getDepartmentListByWorkspaceAndMember(@PathVariable String workspaceId, @PathVariable ("email") String email){
+    public ResponseEntity<List<Department>> getDepartmentListByWorkspaceAndMember(@PathVariable ("email") String email,
+                                                                                  @PathVariable ("workspaceId") String workspaceId){
         List<Department> departmentList = departmentRepository.findDepartmentListByMember(workspaceId, email);
 
         if(departmentList.size() == 0){

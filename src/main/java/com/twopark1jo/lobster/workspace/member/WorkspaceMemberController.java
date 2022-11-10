@@ -1,5 +1,6 @@
 package com.twopark1jo.lobster.workspace.member;
 
+import com.twopark1jo.lobster.workspace.Workspace;
 import com.twopark1jo.lobster.workspace.WorkspaceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,7 +27,5 @@ public class WorkspaceMemberController {
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
-
-
 
 }

@@ -32,5 +32,12 @@ public class DepartmentMemberController {
         return ResponseEntity.notFound().build();
     }
 
+    /*@PostMapping("/{department}/member/join")
+    public ResponseEntity create(@PathVariable String departmentId){
+
+
+
+    }*/
+
 }
 
