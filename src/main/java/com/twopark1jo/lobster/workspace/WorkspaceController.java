@@ -60,7 +60,7 @@ public class WorkspaceController {
         return new ResponseEntity(HttpStatus.CREATED);
     }
 
-    @GetMapping("{email}/workspace/list")
+    @GetMapping("{email}/workspaces")
     public ResponseEntity<List<Workspace>> getListOfWorkspacesByMember(@PathVariable("email") String email){
         boolean isMember = memberRepository.existsById(email);
 
