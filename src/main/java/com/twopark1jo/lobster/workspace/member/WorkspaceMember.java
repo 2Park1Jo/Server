@@ -22,6 +22,6 @@ public class WorkspaceMember {
     @Column(name = "member_name")
     private String memberName;
 
-    @Column(name = "grade")
-    private String grade;
+    @Column(name = "workspace_grade")
+    private String workspaceGrade;
 }
