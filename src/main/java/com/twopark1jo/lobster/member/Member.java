@@ -24,18 +24,18 @@ public class Member {
 
     @Column(name = "member_name")
     @NotBlank
-    private String name;
+    private String memberName;
 
     @Builder
-    public Member(String email, String name) {
+    public Member(String email, String memberName) {
         this.email = email;
-        this.name = name;
+        this.memberName = memberName;
     }
 
     @Builder
-    public Member(String email, String password, String name) {
+    public Member(String email, String password, String memberName) {
         this.email = email;
         this.password = password;
-        this.name = name;
+        this.memberName = memberName;
     }
 }

@@ -21,18 +21,14 @@ public class Department {
     private String departmentId;
 
     @Column(name = "workspace_id")
-    @NotBlank
     private String workspaceId;
 
     @Column(name = "department_name")
-    @NotBlank
     private String departmentName;
 
     @Column(name = "department_goal")
-    @NotBlank
     private String departmentGoal;
 
     @Column(name = "department_deadline")
-    @NotBlank
     private String departmentDeadline;
 }

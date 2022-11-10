@@ -42,7 +42,7 @@ $(document).ready(function(){
 
     //stomp client 연결
     //http://localhost:8080/chat
-    var sockJs = new SockJS("http://localhost:8080/chat");
+    var sockJs = new SockJS("http://ec2-54-180-99-127.ap-northeast-2.compute.amazonaws.com:8080/chat");
     var stomp = Stomp.over(sockJs);
 
     stomp.connect({}, onConnected, onError);
