@@ -63,8 +63,8 @@ public class DepartmentController {
 
 
     //회원이 속한 워크스페이스 부서 목록
-    @GetMapping("member/workspace/{workspaceId}/departments")
-    public ResponseEntity<List<Department>> getDepartmentListByWorkspaceAndMember(@PathVariable String workspaceId, @Valid @RequestParam("email") String email){
+    @GetMapping("member/{email}/workspace/{workspaceId}/departments")
+    public ResponseEntity<List<Department>> getDepartmentListByWorkspaceAndMember(@PathVariable String workspaceId, @PathVariable ("email") String email){
         List<Department> departmentList = departmentRepository.findDepartmentListByMember(workspaceId, email);
 
         if(departmentList.size() == 0){
@@ -72,7 +72,5 @@ public class DepartmentController {
         }
         return new ResponseEntity<>(departmentList, HttpStatus.OK);
     }
-
-
 
 }

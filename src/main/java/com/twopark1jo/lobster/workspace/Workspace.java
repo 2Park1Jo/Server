@@ -10,6 +10,7 @@ import javax.persistence.Table;
 @Entity(name = "workspace")
 @Table(name = "workspace")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Getter
 @Setter
 @ToString
@@ -21,16 +22,9 @@ public class Workspace {
     @Column(name = "workspace_name")
     private String workspaceName;
 
-    @Column(name = "goal")
-    private String goal;
+    @Column(name = "workspace_goal")
+    private String workspaceGoal;
 
-    @Column(name = "deadline")
-    private String deadline;
-
-    public Workspace(String workspaceId, String workspaceName, String goal, String deadline) {
-        this.workspaceId = workspaceId;
-        this.workspaceName = workspaceName;
-        this.goal = goal;
-        this.deadline = deadline;
-    }
+    @Column(name = "workspace_deadline")
+    private String workspaceDeadline;
 }

@@ -1,36 +1,35 @@
 package com.twopark1jo.lobster.workspace;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/workspace")
 @RequiredArgsConstructor
 public class WorkspaceController {
 
-    private final WorkspaceRepository workSpaceRepository;
-    private final WorkspaceMemberRepository workspaceMemberRepository;
+    private final WorkspaceRepository workspaceRepository;
 
-    @GetMapping("/details")
-    public Optional<Workspace> getWorkSpace(@RequestParam("id") String workspaceId){
-        return workSpaceRepository.findById(workspaceId);
+    @GetMapping("/workspace/{workspaceId}/detail")
+    public ResponseEntity<Workspace> getWorkspaceDetail(@PathVariable String workspaceId){
+        boolean isWorkspace = workspaceRepository.existsById(workspaceId);
+
+        if(isWorkspace){
+            return new ResponseEntity(workspaceRepository.findById(workspaceId), HttpStatus.OK);
+        }
+        return new ResponseEntity(HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping("/member")
-    public Optional<WorkspaceMember> getWorkspaceMember(@RequestParam("id") String workspaceId,
-                                                        @RequestParam("email") String email){
-        return workspaceMemberRepository.findByWorkspaceIdAndEmail(workspaceId, email);
+    @GetMapping("/workspaces")
+    public ResponseEntity<List<Workspace>> getWorkspaces(){
+        List<Workspace> workspaceList = workspaceRepository.findAll();
+
+        return new ResponseEntity<>(workspaceList, HttpStatus.OK);
     }
 
-    @GetMapping("/memberworkspace")
-    public List<WorkspaceMember> getWorkspaceList(@RequestParam("email") String email){
-         return workspaceMemberRepository.findAllByEmail(email);
-    }
 }

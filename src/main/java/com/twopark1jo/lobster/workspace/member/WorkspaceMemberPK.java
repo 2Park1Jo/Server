@@ -1,4 +1,4 @@
-package com.twopark1jo.lobster.workspace;
+package com.twopark1jo.lobster.workspace.member;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
