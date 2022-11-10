@@ -32,4 +32,9 @@ public class WorkspaceController {
         return new ResponseEntity<>(workspaceList, HttpStatus.OK);
     }
 
+    /*@PostMapping("/workspace/{workspaceId}/create")
+    public ResponseEntity create(){
+
+    }*/
+
 }
