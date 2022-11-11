@@ -45,15 +45,10 @@ public class StompChatController {
     public void message(ChatContent chatContent){
         System.out.println("chatMessage = " + chatContent.toString());
 
-        ///임시 데이터
-        chatContent.setDepartmentId("department12345");
-        chatContent.setEmail("abc@naver.com");
-        chatContent.setContentType("0");
-        chatContent.setDate(Timestamp.valueOf(LocalDateTime.now()));
-        chatContent.setChatId(chatContent.getDepartmentId() + chatContent.getDate());
-        /////////////
+        chatContent.setDate(Timestamp.valueOf(LocalDateTime.now()));                    //시간
+        chatContent.setChatId(chatContent.getDepartmentId() + chatContent.getDate());   //채팅아이디(방 아이디 + 시간)
 
-        chatContentRepository.save(chatContent);
+        chatContentRepository.save(chatContent);  //채팅내용 저장
 
         simpMessagingTemplate.convertAndSend("/sub/chat/department/" + chatContent.getDepartmentId(), chatContent);
     }

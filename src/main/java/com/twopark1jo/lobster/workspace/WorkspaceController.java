@@ -3,7 +3,9 @@ package com.twopark1jo.lobster.workspace;
 import com.twopark1jo.lobster.department.department.Department;
 import com.twopark1jo.lobster.department.department.DepartmentController;
 import com.twopark1jo.lobster.department.department.DepartmentRepository;
+import com.twopark1jo.lobster.department.department.member.DepartmentMemberRepository;
 import com.twopark1jo.lobster.member.MemberRepository;
+import com.twopark1jo.lobster.workspace.member.WorkspaceMemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -41,8 +43,9 @@ public class WorkspaceController {
         return new ResponseEntity<>(workspaceList, HttpStatus.OK);
     }
 
-    @PostMapping("/workspace/create")
-    public ResponseEntity create(@RequestBody Workspace workspace){
+    @PostMapping("{email}/workspace/create")
+    public ResponseEntity create(@PathVariable("email") String email,
+                                 @RequestBody Workspace workspace){
         boolean isWorkspace = workspaceRepository.existsById(workspace.getWorkspaceId());
 
         if(isWorkspace){
@@ -56,6 +59,11 @@ public class WorkspaceController {
                 "\uD83D\uDCE2 공지방", null, null);
 
         departmentRepository.save(department);     //기본 공지방 생성
+
+         //워크스페이스 멤버에 추가
+
+         //공지방 멤버에 추가
+
 
         return new ResponseEntity(HttpStatus.CREATED);
     }

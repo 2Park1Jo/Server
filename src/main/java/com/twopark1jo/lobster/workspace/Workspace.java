@@ -15,8 +15,6 @@ import javax.persistence.Table;
 @Setter
 @ToString
 public class Workspace {
-    //private String leader;
-
     @Id
     @Column(name = "workspace_id")
     private String workspaceId;
