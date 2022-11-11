@@ -1,5 +1,6 @@
 package com.twopark1jo.lobster.department.chat;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import javax.persistence.*;
@@ -28,6 +29,7 @@ public class ChatContent {
     private String content;       //대화내용
 
     @Column(name = "date")
+    @JsonFormat(timezone = "Asia/Seoul")
     private Timestamp date;          //대화 시간
 
     @Column(name = "content_type")

@@ -1,16 +1,16 @@
 package com.twopark1jo.lobster.department.chat;
 
+import com.twopark1jo.lobster.department.department.DepartmentRepository;
 import com.twopark1jo.lobster.exception.GlobalExceptionHandler;
 import com.twopark1jo.lobster.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -20,11 +20,12 @@ import java.util.Collections;
 import java.util.List;
 
 @RestController
-@RequestMapping("/chat")
 @RequiredArgsConstructor
 public class StompChatController {
 
     private final ChatContentRepository chatContentRepository;
+    @Autowired
+    private DepartmentRepository departmentRepository;
 
     @Autowired
     private GlobalExceptionHandler exceptionHandler;
@@ -45,7 +46,6 @@ public class StompChatController {
     public void message(ChatContent chatContent){
         System.out.println("chatMessage = " + chatContent.toString());
 
-        chatContent.setDate(Timestamp.valueOf(LocalDateTime.now()));                    //시간
         chatContent.setChatId(chatContent.getDepartmentId() + chatContent.getDate());   //채팅아이디(방 아이디 + 시간)
 
         chatContentRepository.save(chatContent);  //채팅내용 저장
@@ -53,8 +53,14 @@ public class StompChatController {
         simpMessagingTemplate.convertAndSend("/sub/chat/department/" + chatContent.getDepartmentId(), chatContent);
     }
 
-    @GetMapping("/content")
-    public List<ChatContent> getDepartmentChatContent(@RequestParam String departmentId){
-        return chatContentRepository.findAllByDepartmentId(departmentId);
+    @GetMapping("department/{departmentId}/chat/content")
+    public ResponseEntity<List<ChatContent>> getDepartmentChatContent(@PathVariable("departmentId") String departmentId){
+        boolean isDepartment = departmentRepository.existsById(departmentId);
+
+        if(isDepartment){
+            return new ResponseEntity<>(chatContentRepository.findAllByDepartmentId(departmentId), HttpStatus.OK);
+        }
+
+        return ResponseEntity.notFound().build();
     }
 }
