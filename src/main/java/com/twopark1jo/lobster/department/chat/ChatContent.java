@@ -29,8 +29,7 @@ public class ChatContent {
     private String content;       //대화내용
 
     @Column(name = "date")
-    @JsonFormat(timezone = "Asia/Seoul")
-    private Timestamp date;          //대화 시간
+    private String date;          //대화 시간
 
     @Column(name = "content_type")
     private String contentType;   //메세지 or 파일
