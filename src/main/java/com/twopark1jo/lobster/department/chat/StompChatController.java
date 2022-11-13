@@ -1,6 +1,8 @@
 package com.twopark1jo.lobster.department.chat;
 
 import com.twopark1jo.lobster.department.department.DepartmentRepository;
+import com.twopark1jo.lobster.department.department.member.DepartmentMember;
+import com.twopark1jo.lobster.department.department.member.DepartmentMemberController;
 import com.twopark1jo.lobster.exception.GlobalExceptionHandler;
 import com.twopark1jo.lobster.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,9 @@ public class StompChatController {
     private DepartmentRepository departmentRepository;
 
     @Autowired
+    private DepartmentMemberController departmentMemberController;
+
+    @Autowired
     private GlobalExceptionHandler exceptionHandler;
 
     //특정 브로커로 메세지 전달
@@ -38,8 +43,13 @@ public class StompChatController {
     @MessageMapping(value = "/chat/enter")
     public void enter(ChatContent chatContent){
         chatContent.setContent(chatContent.getEmail() + "님이 채팅방에 참여하였습니다.");
+
+        chatContentRepository.save(chatContent);
+
         simpMessagingTemplate.convertAndSend("/sub/chat/department/" + chatContent.getDepartmentId(), chatContent);
     }
+
+
 
     //"/pub/chat/message" : 메세지 전송 -> "/sub/chat/department/{departmentId}"로 해당 채팅방으로 메세지 전달
     @MessageMapping(value = "/chat/message")

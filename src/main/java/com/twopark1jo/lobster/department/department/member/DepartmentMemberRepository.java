@@ -7,4 +7,5 @@ import java.util.List;
 public interface DepartmentMemberRepository extends JpaRepository<DepartmentMember, String> {
     public List<DepartmentMember> findAllByDepartmentId(String departmentId);
 
+    boolean existsByDepartmentIdAndEmail(String departmentId, String email);
 }

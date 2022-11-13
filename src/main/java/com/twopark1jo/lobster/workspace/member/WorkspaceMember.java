@@ -8,16 +8,19 @@ import javax.persistence.*;
 @Table(name = "workspace_member")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Getter
+@Setter
+@ToString
 @Data
 @IdClass(WorkspaceMemberPK.class)
 public class WorkspaceMember {
     @Id
-    @Column(name = "workspace_id")
-    private String workspaceId;
-
-    @Id
     @Column(name = "email")
     private String email;
+
+    @Id
+    @Column(name = "workspace_id")
+    private String workspaceId;
 
     @Column(name = "member_name")
     private String memberName;

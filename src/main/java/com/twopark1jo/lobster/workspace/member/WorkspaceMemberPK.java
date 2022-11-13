@@ -12,15 +12,9 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 public class WorkspaceMemberPK implements Serializable {
-    @Column(name = "workspace_id")
-    private String workspaceId;
-
     @Column(name = "email")
     private String email;
 
-    @Builder
-    public WorkspaceMemberPK(String workspaceId, String email) {
-        this.workspaceId = workspaceId;
-        this.email = email;
-    }
+    @Column(name = "workspace_id")
+    private String workspaceId;
 }
