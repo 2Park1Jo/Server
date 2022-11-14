@@ -1,6 +1,8 @@
 package com.twopark1jo.lobster.department.chat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.twopark1jo.lobster.department.department.Department;
+import com.twopark1jo.lobster.department.department.DepartmentController;
 import com.twopark1jo.lobster.department.department.DepartmentRepository;
 import com.twopark1jo.lobster.department.department.member.DepartmentMember;
 import com.twopark1jo.lobster.department.department.member.DepartmentMemberController;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
@@ -26,11 +29,11 @@ public class StompChatController {
 
     private final ChatContentRepository chatContentRepository;
     @Autowired
-    private DepartmentRepository departmentRepository;
-
-    @Autowired
     private DepartmentMemberController departmentMemberController;
-
+    @Autowired
+    private DepartmentController departmentController;
+    @Autowired
+    private MemberRepository memberRepository;
     //특정 브로커로 메세지 전달
     private final SimpMessagingTemplate simpMessagingTemplate;
 
@@ -45,6 +48,7 @@ public class StompChatController {
         simpMessagingTemplate.convertAndSend("/sub/chat/department/" + chatContent.getDepartmentId(), chatContent);
     }
 
+    //부서에 초대한 회원의 명단
     private String getMemberList(List<DepartmentMember> departmentMemberList){
         int numberOfMembers = departmentMemberList.size();
         StringBuilder memberName = new StringBuilder();
@@ -59,12 +63,17 @@ public class StompChatController {
         return memberName.toString();
     }
 
-    private LocalDateTime getLocalDateTime(){
-        return ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDateTime().withNano(0);
+    //대한민국 서울 기준 현재시각
+    private String getLocalDateTime(){
+        LocalDateTime date = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDateTime().withNano(0);
+        DateTimeFormatter myPattern = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        return date.format(myPattern);
     }
 
-    private String getChatContentId(String departmentId, String date){
-        return departmentId + date;
+    //채팅내용 아이디 = 부서아이디 + 현재 시각
+    private String getTableId(String tableId, String date){
+        return tableId.substring(0, 3) + date;
     }
 
     //"/pub/chat/invitation"
@@ -72,9 +81,7 @@ public class StompChatController {
     public ResponseEntity inviteToDepartment(List<DepartmentMember> departmentMemberList){
         String departmentId = departmentMemberList.get(0).getDepartmentId();
         ChatContent chatContent;
-        String date = getLocalDateTime().toString();
-
-        date = date.replace("T",  " ");
+        String date = getLocalDateTime();
 
         ResponseEntity responseEntity =
                 departmentMemberController.addToDepartmentMemberList(departmentId, departmentMemberList);
@@ -84,7 +91,7 @@ public class StompChatController {
         }
 
         chatContent = ChatContent.builder()
-                .chatId(getChatContentId(departmentId, date))
+                .chatId(getTableId(departmentId, date))
                 .departmentId(departmentId)
                 .email(null)
                 .content(getMemberList(departmentMemberList) + "님이 채팅방에 참여하였습니다.")
@@ -97,6 +104,28 @@ public class StompChatController {
         simpMessagingTemplate.convertAndSend("/sub/chat/department/" + departmentId, chatContent);
 
         return responseEntity;
+    }
+
+    //"/pub/department/creation" : 부서 생성
+    @MessageMapping(value = "/department/creation")
+    public void createDepartment(String email, Department department){
+
+        department.setDepartmentId(getTableId(email, getLocalDateTime()));
+        String memberName = memberRepository.findByEmail(email).getMemberName();
+
+        ResponseEntity responseEntity = departmentController.create(department);  //부서 생성
+
+        DepartmentMember departmentMember = DepartmentMember.builder()
+                .departmentId(department.getDepartmentId())
+                .email(email)
+                .memberName(memberName)
+                .build();
+
+        departmentMemberController.addToDepartmentMemberList(      //부서에 생성자 회원 정보 추가
+                department.getDepartmentId(), departmentMember);
+
+        simpMessagingTemplate.convertAndSend("/sub/chat/department/"
+                + department.getDepartmentId(), responseEntity);
     }
 
     //"/pub/chat/message" : 메세지 전송 -> "/sub/chat/department/{departmentId}"로 해당 채팅방으로 메세지 전달
@@ -113,7 +142,7 @@ public class StompChatController {
 
     @GetMapping("department/{departmentId}/chat/content")
     public ResponseEntity<List<ChatContent>> getDepartmentChatContent(@PathVariable("departmentId") String departmentId){
-        boolean isDepartment = departmentRepository.existsById(departmentId);
+        boolean isDepartment = departmentController.isExistingDepartment(departmentId);
 
         if(isDepartment){
             return new ResponseEntity<>(chatContentRepository.findAllByDepartmentId(departmentId), HttpStatus.OK);

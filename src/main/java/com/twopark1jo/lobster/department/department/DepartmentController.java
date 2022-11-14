@@ -85,4 +85,8 @@ public class DepartmentController {
         }
         return ResponseEntity.notFound().build();
     }
+
+    public Boolean isExistingDepartment(String departmentId){
+        return departmentRepository.existsById(departmentId);
+    }
 }

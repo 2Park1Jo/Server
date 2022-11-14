@@ -13,6 +13,7 @@ import javax.persistence.*;
 @ToString
 @Data
 @IdClass(DepartmentMemberPK.class)
+@Builder
 public class DepartmentMember {
     @Id
     @Column(name = "department_id")

@@ -61,4 +61,23 @@ public class DepartmentMemberController {
 
         return new ResponseEntity(HttpStatus.CREATED);
     }
+
+    @PostMapping("/{departmentId}/invitation")
+    public ResponseEntity addToDepartmentMemberList(@PathVariable String departmentId,
+                                                    @RequestBody DepartmentMember member) {
+        boolean isDepartment = departmentRepository.existsById(departmentId);
+
+        if (isDepartment == !Constants.IS_EXISTING_DEPARTMENT) {   //존재하지 않는 부서일 경우
+            return ResponseEntity.notFound().build();
+        }
+
+        if (departmentMemberRepository.existsByDepartmentIdAndEmail(departmentId, member.getEmail())) {
+            new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+
+        member.setDepartmentId(departmentId);
+        departmentMemberRepository.save(member);
+
+        return new ResponseEntity(HttpStatus.CREATED);
+    }
 }
