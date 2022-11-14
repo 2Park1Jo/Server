@@ -108,6 +108,7 @@ public class StompChatController {
 
     //"/pub/department/creation" : 부서 생성
     @MessageMapping(value = "/chat/department/creation")
+    @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
     public void createDepartment(String email, Department department){
 
         department.setDepartmentId(getTableId(email, getLocalDateTime()));
