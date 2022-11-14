@@ -74,7 +74,8 @@ public class StompChatController {
         ChatContent chatContent;
         String date = getLocalDateTime().toString();
 
-        date.replace("T",  " ");
+        date = date.replace("T",  " ");
+        date = date.split(".")[0];
 
         ResponseEntity responseEntity =
                 departmentMemberController.addToDepartmentMemberList(departmentId, departmentMemberList);
