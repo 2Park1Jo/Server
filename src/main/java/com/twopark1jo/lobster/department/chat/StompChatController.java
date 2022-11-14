@@ -107,7 +107,7 @@ public class StompChatController {
     }
 
     //"/pub/department/creation" : 부서 생성
-    @MessageMapping(value = "/department/creation")
+    @MessageMapping(value = "/chat/department/creation")
     public void createDepartment(String email, String workspaceId, Department department){
 
         department.setDepartmentId(getTableId(email, getLocalDateTime()));
@@ -124,7 +124,9 @@ public class StompChatController {
         departmentMemberController.addToDepartmentMemberList(      //부서에 생성자 회원 정보 추가
                 department.getDepartmentId(), departmentMember);
 
-        simpMessagingTemplate.convertAndSend("/sub/workspace/"
+        System.out.println("departmentMember.toString() = " + departmentMember.toString());
+
+        simpMessagingTemplate.convertAndSend("/sub/chat/workspace/"
                 + workspaceId, responseEntity);
     }
 
