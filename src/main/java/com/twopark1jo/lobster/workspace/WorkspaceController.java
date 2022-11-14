@@ -84,7 +84,7 @@ public class WorkspaceController {
         departmentRepository.save(department);     //기본 공지방 생성
 
         workspaceMemberRepository.save(new WorkspaceMember(email, workspace.getWorkspaceId(),
-                memberName, null));//워크스페이스 멤버에 추가
+                memberName, null));   //워크스페이스 멤버에 추가
 
         departmentMemberRepository.save(new DepartmentMember(department.getDepartmentId(),
                 email, memberName,null, null));     //공지방에 회원정보 추가

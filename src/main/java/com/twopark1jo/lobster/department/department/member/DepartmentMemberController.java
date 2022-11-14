@@ -62,7 +62,7 @@ public class DepartmentMemberController {
         return new ResponseEntity(HttpStatus.CREATED);
     }
 
-    @PostMapping("/{departmentId}/invitation")
+    @PostMapping("/{departmentId}/invitation/person")
     public ResponseEntity addToDepartmentMemberList(@PathVariable String departmentId,
                                                     @RequestBody DepartmentMember member) {
         boolean isDepartment = departmentRepository.existsById(departmentId);
