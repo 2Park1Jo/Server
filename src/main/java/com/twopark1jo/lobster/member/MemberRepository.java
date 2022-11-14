@@ -10,4 +10,7 @@ public interface MemberRepository extends JpaRepository<Member, String> {
             "WHERE email=:email and password=:password)", nativeQuery = true)
     public int checkLogin(@Param("email") String email, @Param("password") String password);
 
+    @Query(value = "SELECT * FROM member " +
+            "WHERE email=:email", nativeQuery = true)
+    public Member findByEmail(@Param("email") String email);
 }
