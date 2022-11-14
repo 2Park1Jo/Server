@@ -3,6 +3,7 @@ package com.twopark1jo.lobster.department.chat;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.twopark1jo.lobster.department.department.Department;
 import com.twopark1jo.lobster.department.department.DepartmentController;
+import com.twopark1jo.lobster.department.department.DepartmentCreation;
 import com.twopark1jo.lobster.department.department.DepartmentRepository;
 import com.twopark1jo.lobster.department.department.member.DepartmentMember;
 import com.twopark1jo.lobster.department.department.member.DepartmentMemberController;
@@ -83,8 +84,14 @@ public class StompChatController {
         ChatContent chatContent;
         String date = getLocalDateTime();
 
+        for (int i=0; i<departmentMemberList.size(); i++){
+            System.out.println("departmentMemberList = " + departmentMemberList.get(i).toString());
+        }
+
         ResponseEntity responseEntity =
                 departmentMemberController.addToDepartmentMemberList(departmentId, departmentMemberList);
+
+        System.out.println("responseEntity = " + responseEntity);
 
         if(responseEntity.getStatusCode() != HttpStatus.CREATED){
             return responseEntity;
@@ -110,13 +117,24 @@ public class StompChatController {
     @MessageMapping(value = "/chat/department/creation")
     @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
     @PostMapping("/test")
-    public void createDepartment(Department department){
+    public void createDepartment(@RequestBody DepartmentCreation departmentCreation){
+        Department department = departmentCreation.getDepartment();
+        List<DepartmentMember> departmentMemberList = departmentCreation.getDepartmentMemberList();
 
         department.setDepartmentId(getTableId(department.getWorkspaceId(), getLocalDateTime()));
 
         ResponseEntity responseEntity = departmentController.create(department);  //부서 생성
 
         System.out.println("department.toString() = " + department.toString());
+
+        for (int i=0; i<departmentMemberList.size(); i++){
+            departmentMemberList.get(i).setDepartmentId(department.getDepartmentId());
+            System.out.println("departmentMemberList = " + departmentMemberList.get(i).toString());
+        }
+
+        System.out.println("////////////////");
+
+        inviteToDepartment(departmentMemberList); //멤버 추가
 
         simpMessagingTemplate.convertAndSend("/sub/chat/workspace/"
                 + department.getWorkspaceId(), responseEntity);
