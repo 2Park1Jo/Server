@@ -112,7 +112,11 @@ public class StompChatController {
     @PostMapping("/test")
     public void createDepartment(Department department){
 
+        department.setDepartmentId(getTableId(department.getWorkspaceId(), getLocalDateTime()));
+
         ResponseEntity responseEntity = departmentController.create(department);  //부서 생성
+
+        System.out.println("department.toString() = " + department.toString());
 
         simpMessagingTemplate.convertAndSend("/sub/chat/workspace/"
                 + department.getWorkspaceId(), responseEntity);
