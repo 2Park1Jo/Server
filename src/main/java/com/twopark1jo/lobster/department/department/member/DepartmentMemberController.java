@@ -1,5 +1,6 @@
 package com.twopark1jo.lobster.department.department.member;
 
+import com.twopark1jo.lobster.department.chat.ChatContent;
 import com.twopark1jo.lobster.department.department.Department;
 import com.twopark1jo.lobster.department.department.DepartmentRepository;
 import com.twopark1jo.lobster.exception.GlobalExceptionHandler;
@@ -11,6 +12,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @RestController
@@ -40,7 +44,7 @@ public class DepartmentMemberController {
         boolean isDepartment = departmentRepository.existsById(departmentId);
         DepartmentMember member;
 
-        if (isDepartment == !Constants.IS_EXISTING_DEPARTMENT) {
+        if (isDepartment == !Constants.IS_EXISTING_DEPARTMENT) {   //존재하지 않는 부서일 경우
             return ResponseEntity.notFound().build();
         }
 
@@ -57,5 +61,4 @@ public class DepartmentMemberController {
 
         return new ResponseEntity(HttpStatus.CREATED);
     }
-
 }

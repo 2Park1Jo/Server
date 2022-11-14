@@ -35,9 +35,6 @@ public class StompChatController {
     @Autowired
     private DepartmentMemberController departmentMemberController;
 
-    @Autowired
-    private GlobalExceptionHandler exceptionHandler;
-
     //특정 브로커로 메세지 전달
     private final SimpMessagingTemplate simpMessagingTemplate;
 
@@ -47,7 +44,7 @@ public class StompChatController {
     public void enter(ChatContent chatContent){
         chatContent.setContent(chatContent.getEmail() + "님이 채팅방에 참여하였습니다.");
 
-        chatContentRepository.save(chatContent);
+        //chatContentRepository.save(chatContent);
 
         simpMessagingTemplate.convertAndSend("/sub/chat/department/" + chatContent.getDepartmentId(), chatContent);
     }
@@ -74,6 +71,7 @@ public class StompChatController {
         return departmentId + date;
     }
 
+    //"/pub/chat/invitation
     @MessageMapping(value = "/chat/invitation")
     public ResponseEntity inviteToDepartment(List<DepartmentMember> departmentMemberList){
         String departmentId = departmentMemberList.get(0).getDepartmentId();
@@ -90,14 +88,12 @@ public class StompChatController {
         chatContent = ChatContent.builder()
                 .chatId(getChatContentId(departmentId, date))
                 .departmentId(departmentId)
+                .email(null)
                 .content(getMemberList(departmentMemberList) + "님이 채팅방에 참여하였습니다.")
                 .date(date.toString())
                 .contentType("0")
                 .link(null)
                 .build();
-
-        chatContent.setContent(getMemberList(departmentMemberList) + "님이 채팅방에 참여하였습니다.");
-        chatContent.setDepartmentId(departmentId);
 
         simpMessagingTemplate.convertAndSend("/sub/chat/department/" + departmentId, chatContent);
 

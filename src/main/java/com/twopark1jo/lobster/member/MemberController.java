@@ -53,8 +53,6 @@ public class MemberController {
 
     @PostMapping("/logout")
     public ResponseEntity logout(@RequestBody Member member, HttpServletRequest request){
-        //HttpSession session = request.getSession();
-        //session.invalidate();    //세션 삭제
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
