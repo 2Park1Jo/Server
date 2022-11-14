@@ -13,6 +13,7 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 @ToString
+@Builder
 public class ChatContent {
 
     @Id
