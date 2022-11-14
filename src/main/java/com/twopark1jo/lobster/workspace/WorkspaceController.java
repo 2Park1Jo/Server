@@ -3,6 +3,7 @@ package com.twopark1jo.lobster.workspace;
 import com.twopark1jo.lobster.department.department.Department;
 import com.twopark1jo.lobster.department.department.DepartmentController;
 import com.twopark1jo.lobster.department.department.DepartmentRepository;
+import com.twopark1jo.lobster.department.department.member.DepartmentMember;
 import com.twopark1jo.lobster.department.department.member.DepartmentMemberRepository;
 import com.twopark1jo.lobster.member.MemberRepository;
 import com.twopark1jo.lobster.workspace.member.WorkspaceMemberRepository;
@@ -23,6 +24,8 @@ public class WorkspaceController {
     private final WorkspaceRepository workspaceRepository;
     @Autowired
     private DepartmentRepository departmentRepository;
+    @Autowired
+    private DepartmentMemberRepository departmentMemberRepository;
     @Autowired
     private MemberRepository memberRepository;
 
@@ -62,7 +65,7 @@ public class WorkspaceController {
 
          //워크스페이스 멤버에 추가
 
-         //공지방 멤버에 추가
+        //departmentMemberRepository.save(new DepartmentMember(department.getDepartmentId(), email, "", "", ""));//공지방 멤버에 추가
 
 
         return new ResponseEntity(HttpStatus.CREATED);

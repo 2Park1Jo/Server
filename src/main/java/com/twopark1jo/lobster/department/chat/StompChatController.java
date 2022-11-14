@@ -15,19 +15,13 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Collections;
 import java.util.List;
-import java.util.TimeZone;
 
 @RestController
 @RequiredArgsConstructor
-@JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
 public class StompChatController {
 
     private final ChatContentRepository chatContentRepository;
@@ -73,7 +67,7 @@ public class StompChatController {
         return departmentId + date;
     }
 
-    //"/pub/chat/invitation
+    //"/pub/chat/invitation"
     @MessageMapping(value = "/chat/invitation")
     public ResponseEntity inviteToDepartment(List<DepartmentMember> departmentMemberList){
         String departmentId = departmentMemberList.get(0).getDepartmentId();
@@ -93,10 +87,11 @@ public class StompChatController {
                 .email(null)
                 .content(getMemberList(departmentMemberList) + "님이 채팅방에 참여하였습니다.")
                 .date(date.toString())
-                .contentType("0")
+                .contentType("-1")
                 .link(null)
                 .build();
 
+        chatContentRepository.save(chatContent);
         simpMessagingTemplate.convertAndSend("/sub/chat/department/" + departmentId, chatContent);
 
         return responseEntity;
