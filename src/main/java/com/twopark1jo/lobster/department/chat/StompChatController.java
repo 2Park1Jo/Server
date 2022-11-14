@@ -60,7 +60,7 @@ public class StompChatController {
     }
 
     private LocalDateTime getLocalDateTime(){
-        return ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDateTime();
+        return ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDateTime().withNano(0);
     }
 
     private String getChatContentId(String departmentId, String date){
@@ -75,7 +75,6 @@ public class StompChatController {
         String date = getLocalDateTime().toString();
 
         date = date.replace("T",  " ");
-        date = date.split(".")[0];
 
         ResponseEntity responseEntity =
                 departmentMemberController.addToDepartmentMemberList(departmentId, departmentMemberList);
