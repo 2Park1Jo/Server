@@ -1,5 +1,6 @@
 package com.twopark1jo.lobster.department.chat;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.twopark1jo.lobster.department.department.DepartmentRepository;
 import com.twopark1jo.lobster.department.department.member.DepartmentMember;
 import com.twopark1jo.lobster.department.department.member.DepartmentMemberController;
@@ -26,6 +27,7 @@ import java.util.TimeZone;
 
 @RestController
 @RequiredArgsConstructor
+@JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
 public class StompChatController {
 
     private final ChatContentRepository chatContentRepository;
