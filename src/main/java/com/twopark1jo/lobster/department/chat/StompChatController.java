@@ -1,14 +1,13 @@
 package com.twopark1jo.lobster.department.chat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.twopark1jo.lobster.department.department.Department;
-import com.twopark1jo.lobster.department.department.DepartmentController;
-import com.twopark1jo.lobster.department.department.DepartmentCreation;
-import com.twopark1jo.lobster.department.department.DepartmentRepository;
+import com.twopark1jo.lobster.department.department.*;
 import com.twopark1jo.lobster.department.department.member.DepartmentMember;
 import com.twopark1jo.lobster.department.department.member.DepartmentMemberController;
 import com.twopark1jo.lobster.exception.GlobalExceptionHandler;
 import com.twopark1jo.lobster.member.MemberRepository;
+import com.twopark1jo.lobster.member.MemberServiceImpl;
+import com.twopark1jo.lobster.utility.Constants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,12 +28,8 @@ import java.util.List;
 public class StompChatController {
 
     private final ChatContentRepository chatContentRepository;
-    @Autowired
-    private DepartmentMemberController departmentMemberController;
-    @Autowired
-    private DepartmentController departmentController;
-    @Autowired
-    private MemberRepository memberRepository;
+    private final DepartmentServiceImpl departmentService;
+    private final MemberServiceImpl memberService;
     //특정 브로커로 메세지 전달
     private final SimpMessagingTemplate simpMessagingTemplate;
 
@@ -84,17 +79,9 @@ public class StompChatController {
         ChatContent chatContent;
         String date = getLocalDateTime();
 
-        for (int i=0; i<departmentMemberList.size(); i++){
-            System.out.println("departmentMemberList = " + departmentMemberList.get(i).toString());
-        }
-
-        ResponseEntity responseEntity =
-                departmentMemberController.addToDepartmentMemberList(departmentId, departmentMemberList);
-
-        System.out.println("responseEntity = " + responseEntity);
-
-        if(responseEntity.getStatusCode() != HttpStatus.CREATED){
-            return responseEntity;
+        if(memberService.addToDepartment(departmentId, departmentMemberList)
+            == !Constants.IS_DATA_SAVED_SUCCESSFULLY){
+            return ResponseEntity.notFound().build();
         }
 
         chatContent = ChatContent.builder()
@@ -108,9 +95,10 @@ public class StompChatController {
                 .build();
 
         chatContentRepository.save(chatContent);
-        simpMessagingTemplate.convertAndSend("/sub/chat/department/" + departmentId, chatContent);
+        simpMessagingTemplate.convertAndSend(
+                "/sub/chat/department/" + departmentId, chatContent);
 
-        return responseEntity;
+        return ResponseEntity.ok().build();
     }
 
     //"/pub/department/creation" : 부서 생성
@@ -123,21 +111,16 @@ public class StompChatController {
 
         department.setDepartmentId(getTableId(department.getWorkspaceId(), getLocalDateTime()));
 
-        ResponseEntity responseEntity = departmentController.create(department);  //부서 생성
-
-        System.out.println("department.toString() = " + department.toString());
+        departmentService.create(department);  //부서 생성
 
         for (int i=0; i<departmentMemberList.size(); i++){
             departmentMemberList.get(i).setDepartmentId(department.getDepartmentId());
-            System.out.println("departmentMemberList = " + departmentMemberList.get(i).toString());
         }
-
-        System.out.println("////////////////");
 
         inviteToDepartment(departmentMemberList); //멤버 추가
 
-        simpMessagingTemplate.convertAndSend("/sub/chat/workspace/"
-                + department.getWorkspaceId(), responseEntity);
+        simpMessagingTemplate.convertAndSend(
+                "/sub/chat/workspace/" + department.getWorkspaceId());
     }
 
     //"/pub/chat/message" : 메세지 전송 -> "/sub/chat/department/{departmentId}"로 해당 채팅방으로 메세지 전달
@@ -154,7 +137,7 @@ public class StompChatController {
 
     @GetMapping("department/{departmentId}/chat/content")
     public ResponseEntity<List<ChatContent>> getDepartmentChatContent(@PathVariable("departmentId") String departmentId){
-        boolean isDepartment = departmentController.isExistingDepartment(departmentId);
+        boolean isDepartment = departmentService.isExistingDepartment(departmentId);
 
         if(isDepartment){
             return new ResponseEntity<>(chatContentRepository.findAllByDepartmentId(departmentId), HttpStatus.OK);

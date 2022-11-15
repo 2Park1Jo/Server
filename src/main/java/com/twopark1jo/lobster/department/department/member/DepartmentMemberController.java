@@ -1,83 +1,42 @@
 package com.twopark1jo.lobster.department.department.member;
 
-import com.twopark1jo.lobster.department.chat.ChatContent;
-import com.twopark1jo.lobster.department.department.Department;
-import com.twopark1jo.lobster.department.department.DepartmentRepository;
 import com.twopark1jo.lobster.exception.GlobalExceptionHandler;
-import com.twopark1jo.lobster.utility.Constants;
-import com.twopark1jo.lobster.workspace.member.WorkspaceMember;
+import com.twopark1jo.lobster.member.MemberServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.List;
 
 @RestController
 @RequestMapping("/department")
 @RequiredArgsConstructor
 public class DepartmentMemberController {
-    private final DepartmentMemberRepository departmentMemberRepository;
-    private final DepartmentRepository departmentRepository;
+    private final MemberServiceImpl memberService;
+
     @Autowired
     private GlobalExceptionHandler exceptionHandler;
 
     //해당 부서의 모든 멤버 목록
     @GetMapping("/{departmentId}/members")
-    public ResponseEntity<List<DepartmentMember>> getMemberByDepartment(@PathVariable String departmentId) {
-        boolean isDepartment = departmentRepository.existsById(departmentId);
+    public ResponseEntity<List<DepartmentMember>> getMemberListByDepartment(@PathVariable String departmentId) {
+        List<DepartmentMember> memberList = memberService.getMemberListByDepartment(departmentId);
 
-        if (isDepartment == !Constants.IS_EXISTING_DEPARTMENT) {
+        if(memberList == null || memberList.size() == 0){
             return ResponseEntity.notFound().build();
         }
 
-        return new ResponseEntity<>(departmentMemberRepository.findAllByDepartmentId(departmentId), HttpStatus.OK);
+        return new ResponseEntity<>(memberList, HttpStatus.OK);
     }
 
     @PostMapping("/{departmentId}/invitation")
     public ResponseEntity addToDepartmentMemberList(@PathVariable String departmentId,
-                                                   @RequestBody List<DepartmentMember> departmentMemberList) {
-        boolean isDepartment = departmentRepository.existsById(departmentId);
-        DepartmentMember member;
-
-        if (isDepartment == !Constants.IS_EXISTING_DEPARTMENT) {   //존재하지 않는 부서일 경우
-            return ResponseEntity.notFound().build();
+                                                   @RequestBody List<DepartmentMember> memberList) {
+        if(memberService.addToDepartment(departmentId, memberList)){
+            return new ResponseEntity(HttpStatus.CREATED);
         }
 
-        for (int index = 0; index < departmentMemberList.size(); index++) {
-            member = departmentMemberList.get(index);
-            //부서에 이미 소속된 회원정보는 저장X
-            if (departmentMemberRepository.existsByDepartmentIdAndEmail(departmentId, member.getEmail())) {
-                continue;
-            }
-
-            member.setDepartmentId(departmentId);
-            departmentMemberRepository.save(member);
-        }
-
-        return new ResponseEntity(HttpStatus.CREATED);
-    }
-
-    @PostMapping("/{departmentId}/invitation/person")
-    public ResponseEntity addToDepartmentMemberList(@PathVariable String departmentId,
-                                                    @RequestBody DepartmentMember member) {
-        boolean isDepartment = departmentRepository.existsById(departmentId);
-
-        if (isDepartment == !Constants.IS_EXISTING_DEPARTMENT) {   //존재하지 않는 부서일 경우
-            return ResponseEntity.notFound().build();
-        }
-
-        if (departmentMemberRepository.existsByDepartmentIdAndEmail(departmentId, member.getEmail())) {
-            new ResponseEntity(HttpStatus.BAD_REQUEST);
-        }
-
-        member.setDepartmentId(departmentId);
-        departmentMemberRepository.save(member);
-
-        return new ResponseEntity(HttpStatus.CREATED);
+        return new ResponseEntity(HttpStatus.NOT_FOUND);
     }
 }

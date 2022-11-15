@@ -15,14 +15,15 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 public class DepartmentController {
-    private final DepartmentRepository departmentRepository;
+
+    private final DepartmentServiceImpl departmentService;
     @Autowired
     private GlobalExceptionHandler exceptionHandler;
 
     //전체 부서 목록
     @GetMapping("/departments")
     public ResponseEntity<List<Department>> getDepartmentList(){
-        List<Department> departmentList = departmentRepository.findAll();
+        List<Department> departmentList = departmentService.getDepartmentList();
 
         if(departmentList.size() == 0){
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -33,7 +34,7 @@ public class DepartmentController {
     //워크스페이스별 부서목록 조회
     @GetMapping("/workspace/{workspaceId}/departments")
     public ResponseEntity<List<Department>> getDepartmentListByWorkspace(@PathVariable String workspaceId){
-        List<Department> departmentList = departmentRepository.findAllByWorkspaceId(workspaceId);
+        List<Department> departmentList = departmentService.getDepartmentListByWorkspace(workspaceId);
 
         if(departmentList.size() == 0){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -46,9 +47,10 @@ public class DepartmentController {
     @PostMapping("/workspace/department/create")
     public ResponseEntity create(@RequestBody Department department){
         boolean isDuplicatedDepartmentId =
-                departmentRepository.existsById(department.getDepartmentId());
-        boolean isDuplicatedDepartmentName =
-                departmentRepository.existsByWorkspaceIdAndDepartmentName(department.getWorkspaceId(), department.getDepartmentName());
+                departmentService.isExistingDepartment(department.getDepartmentId());
+
+        boolean isDuplicatedDepartmentName = departmentService.isDepartmentNameInWorkspace(
+                        department.getWorkspaceId(), department.getDepartmentName());
 
         if(isDuplicatedDepartmentId){
             throw new DepartmentException(ErrorCode.EXISTED_DEPARTMENT_ID);
@@ -57,7 +59,8 @@ public class DepartmentController {
             throw new DepartmentException(ErrorCode.EXISTED_DEPARTMENT_NAME);
         }
 
-        departmentRepository.save(department);
+        departmentService.create(department);
+
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
@@ -66,7 +69,7 @@ public class DepartmentController {
     @GetMapping("/member/{email}/workspace/{workspaceId}/departments")
     public ResponseEntity<List<Department>> getDepartmentListByWorkspaceAndMember(@PathVariable ("email") String email,
                                                                                   @PathVariable ("workspaceId") String workspaceId){
-        List<Department> departmentList = departmentRepository.findDepartmentListByMember(workspaceId, email);
+        List<Department> departmentList = departmentService.getDepartmentListByMember(workspaceId, email);
 
         if(departmentList.size() == 0){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -77,16 +80,12 @@ public class DepartmentController {
     //부서 정보 수정
     @PostMapping("/department/update")
     public ResponseEntity updateDepartment(@RequestBody Department department) {
-        boolean isDepartment = departmentRepository.existsById(department.getDepartmentId());
+        boolean isDepartment = departmentService.isExistingDepartment(department.getDepartmentId());
 
         if (isDepartment) {
-            departmentRepository.save(department);
+            departmentService.create(department);
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();
-    }
-
-    public Boolean isExistingDepartment(String departmentId){
-        return departmentRepository.existsById(departmentId);
     }
 }
