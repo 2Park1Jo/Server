@@ -20,31 +20,29 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MemberController {
 
-    private final MemberRepository memberRepository;
+    private final MemberServiceImpl memberService;
     @Autowired
     private GlobalExceptionHandler exceptionHandler;
 
     @GetMapping("/profile")
-    public ResponseEntity<Optional> getMember(@RequestParam("email") String email){
-        boolean isMember = memberRepository.existsById(email);
+    public ResponseEntity<Member> getMember(@RequestParam("email") String email){
+        Member member = memberService.getMemberProfile(email);
 
-        if(isMember){
-            return new ResponseEntity<>(memberRepository.findById(email), HttpStatus.OK);
+        if(member == null){
+            return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.notFound().build();
+        return new ResponseEntity<>(member, HttpStatus.OK);
     }
 
     @GetMapping("/duplicateid")
     public boolean checkDuplicateEmail(@RequestParam("email") String email){
-        return memberRepository.existsById(email);
+        return memberService.duplicateId(email);
     }
 
     @PostMapping("/login")
     public ResponseEntity checkLogin(@RequestBody Member member){ //HttpServletRequest request){
-        int isMember = memberRepository.checkLogin(member.getEmail(), member.getPassword());
-
-        if(isMember == Constants.IS_MEMBER){
+        if(memberService.login(member)){
             return new ResponseEntity<>(HttpStatus.OK);
         }
 
@@ -52,7 +50,7 @@ public class MemberController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity logout(@RequestBody Member member, HttpServletRequest request){
+    public ResponseEntity logout(@RequestBody Member member){
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -60,18 +58,15 @@ public class MemberController {
 
     @PostMapping("/signup")
     public ResponseEntity signUp(@Valid @RequestBody Member member){
-        boolean isMember = memberRepository.existsById(member.getEmail());
-
-        if(isMember){
-            throw new MemberException(ErrorCode.EXISTED_EMAIL);
+        if(memberService.signUp(member)){
+            return new ResponseEntity<>(HttpStatus.CREATED);
         }
 
-        memberRepository.save(member);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        throw new MemberException(ErrorCode.EXISTED_EMAIL);
     }
 
     @GetMapping("/allmember")
     public List<Member> getAllMemberList(){
-        return memberRepository.findAll();
+        return memberService.getAllMemberList();
     }
 }

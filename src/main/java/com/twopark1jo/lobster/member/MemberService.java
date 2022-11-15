@@ -8,15 +8,20 @@ import java.util.List;
 
 public interface MemberService {
 
-    void signUp();
+    boolean signUp(Member member);
 
-    void singIn();
+    boolean login(Member member);
+
+    void logout(Member member);
+
+    boolean duplicateId(String email);
 
     Member getMemberProfile(String email);
+    List<Member> getAllMemberList();
 
     List<DepartmentMember> getMemberListByDepartment(String departmentId);
 
-    List<Member> getMemberListByWorkspace(String workspaceId);
+    List<WorkspaceMember> getMemberListByWorkspace(String workspaceId);
 
     boolean isExistingMember(String email);
 
