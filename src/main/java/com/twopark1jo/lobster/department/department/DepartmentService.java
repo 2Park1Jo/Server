@@ -1,10 +1,15 @@
 package com.twopark1jo.lobster.department.department;
 
+import com.twopark1jo.lobster.department.department.member.DepartmentMember;
+import com.twopark1jo.lobster.member.Member;
+
 import java.util.List;
 
 public interface DepartmentService {
 
-    void create(Department department);
+    boolean create(Department department);
+
+    void addDepartmentMember(DepartmentMember member);
 
     List<Department> getDepartmentList();
 
@@ -16,5 +21,5 @@ public interface DepartmentService {
 
     boolean isDepartmentNameInWorkspace(String workspaceId, String departmentName);
 
-    boolean isExistingMember(String email);
+    boolean isExistingMember(String departmentId, String email);
 }

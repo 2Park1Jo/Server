@@ -7,6 +7,7 @@ import com.twopark1jo.lobster.exception.ErrorCode;
 import com.twopark1jo.lobster.exception.MemberException;
 import com.twopark1jo.lobster.utility.Constants;
 import com.twopark1jo.lobster.workspace.member.WorkspaceMember;
+import com.twopark1jo.lobster.workspace.member.WorkspaceMemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,7 @@ public class MemberServiceImpl implements MemberService{
     final private MemberRepository memberRepository;
     final private DepartmentRepository departmentRepository;
     final private DepartmentMemberRepository departmentMemberRepository;
+    final private WorkspaceMemberRepository workspaceMemberRepository;
 
     @Override
     public boolean signUp(Member member) {
@@ -83,7 +85,7 @@ public class MemberServiceImpl implements MemberService{
 
     @Override
     public List<WorkspaceMember> getMemberListByWorkspace(String workspaceId) {
-        return null;
+        return workspaceMemberRepository.findAllByWorkspaceId(workspaceId);
     }
 
     @Override
@@ -92,7 +94,8 @@ public class MemberServiceImpl implements MemberService{
     }
 
     @Override
-    public boolean addToDepartment(String departmentId, List<DepartmentMember> memberList) {
+    public boolean addToDepartment(List<DepartmentMember> memberList) {
+        String departmentId = memberList.get(0).getDepartmentId(); //부서 아이디
         boolean isDepartment = departmentRepository.existsById(departmentId);
         DepartmentMember member;
 
@@ -108,7 +111,7 @@ public class MemberServiceImpl implements MemberService{
             }
 
             member.setDepartmentId(departmentId);
-            departmentMemberRepository.save(member);
+            departmentMemberRepository.save(member);   //생성된 부서에 부서회원 정보 저장
         }
 
         return Constants.IS_DATA_SAVED_SUCCESSFULLY;

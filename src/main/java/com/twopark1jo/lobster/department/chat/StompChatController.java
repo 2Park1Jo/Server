@@ -3,18 +3,13 @@ package com.twopark1jo.lobster.department.chat;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.twopark1jo.lobster.department.department.*;
 import com.twopark1jo.lobster.department.department.member.DepartmentMember;
-import com.twopark1jo.lobster.department.department.member.DepartmentMemberController;
-import com.twopark1jo.lobster.exception.GlobalExceptionHandler;
-import com.twopark1jo.lobster.member.MemberRepository;
 import com.twopark1jo.lobster.member.MemberServiceImpl;
 import com.twopark1jo.lobster.utility.Constants;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -30,8 +25,7 @@ public class StompChatController {
     private final ChatContentRepository chatContentRepository;
     private final DepartmentServiceImpl departmentService;
     private final MemberServiceImpl memberService;
-    //특정 브로커로 메세지 전달
-    private final SimpMessagingTemplate simpMessagingTemplate;
+    private final SimpMessagingTemplate simpMessagingTemplate;  //특정 브로커로 메세지 전달
 
     //client가 send 경로(setApplicationDestinationPrefixes)
     //"/pub/chat/enter" : 회원 입장 -> "/sub/chat/department/{departmentId}"로 채팅방에 참여한 회원 이메일 전송
@@ -45,7 +39,7 @@ public class StompChatController {
     }
 
     //부서에 초대한 회원의 명단
-    private String getMemberList(List<DepartmentMember> departmentMemberList){
+    private String getMemberNameList(List<DepartmentMember> departmentMemberList){
         int numberOfMembers = departmentMemberList.size();
         StringBuilder memberName = new StringBuilder();
 
@@ -72,23 +66,23 @@ public class StompChatController {
         return tableId.substring(0, 3) + date;
     }
 
-    //"/pub/chat/invitation"
+    //"/pub/chat/invitation" : 기존 부서에 회원 추가
     @MessageMapping(value = "/chat/invitation")
     public ResponseEntity inviteToDepartment(List<DepartmentMember> departmentMemberList){
         String departmentId = departmentMemberList.get(0).getDepartmentId();
         ChatContent chatContent;
         String date = getLocalDateTime();
 
-        if(memberService.addToDepartment(departmentId, departmentMemberList)
+        if(memberService.addToDepartment(departmentMemberList)   //부서회원DB에 부서회원목록 저장
             == !Constants.IS_DATA_SAVED_SUCCESSFULLY){
             return ResponseEntity.notFound().build();
         }
 
-        chatContent = ChatContent.builder()
+        chatContent = ChatContent.builder()                      //채팅방 참여 메세지
                 .chatId(getTableId(departmentId, date))
                 .departmentId(departmentId)
                 .email(null)
-                .content(getMemberList(departmentMemberList) + "님이 채팅방에 참여하였습니다.")
+                .content(getMemberNameList(departmentMemberList) + "님이 채팅방에 참여하였습니다.")
                 .date(date.toString())
                 .contentType("-1")
                 .link(null)
@@ -101,26 +95,30 @@ public class StompChatController {
         return ResponseEntity.ok().build();
     }
 
-    //"/pub/department/creation" : 부서 생성
+    //"/pub/department/creation" : 부서 생성 + 회원 추가
     @MessageMapping(value = "/chat/department/creation")
     @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
     @PostMapping("/test")
-    public void createDepartment(@RequestBody DepartmentCreation departmentCreation){
-        Department department = departmentCreation.getDepartment();
-        List<DepartmentMember> departmentMemberList = departmentCreation.getDepartmentMemberList();
+    public ResponseEntity createDepartment(@RequestBody DepartmentCreation departmentCreation){
+        Department department = departmentCreation.getDepartment();    //생성할 부서 정보
+        List<DepartmentMember> departmentMemberList = departmentCreation.getDepartmentMemberList();  //부서에 추가할 회원 목록
 
-        department.setDepartmentId(getTableId(department.getWorkspaceId(), getLocalDateTime()));
+        departmentService.create(department);                //부서 생성
 
-        departmentService.create(department);  //부서 생성
+        if(departmentService.create(department)){
+            return ResponseEntity.badRequest().build();
+        }
 
-        for (int i=0; i<departmentMemberList.size(); i++){
+        for (int i=0; i<departmentMemberList.size(); i++){   //부서 회원 정보에 생성한 부서 아이디 저장
             departmentMemberList.get(i).setDepartmentId(department.getDepartmentId());
         }
 
-        inviteToDepartment(departmentMemberList); //멤버 추가
+        inviteToDepartment(departmentMemberList);            //회원 추가 및 회원 초대 메세지 전송
 
-        simpMessagingTemplate.convertAndSend(
-                "/sub/chat/workspace/" + department.getWorkspaceId());
+        simpMessagingTemplate.convertAndSend(                //부서 생성 메세지 전송
+                "/sub/chat/workspace/" + department.getWorkspaceId(), department);
+
+        return new ResponseEntity(HttpStatus.CREATED);
     }
 
     //"/pub/chat/message" : 메세지 전송 -> "/sub/chat/department/{departmentId}"로 해당 채팅방으로 메세지 전달

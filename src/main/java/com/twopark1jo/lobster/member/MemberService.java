@@ -25,7 +25,7 @@ public interface MemberService {
 
     boolean isExistingMember(String email);
 
-    boolean addToDepartment(String departmentId, List<DepartmentMember> memberList);
+    boolean addToDepartment(List<DepartmentMember> memberList);
 
     void addToWorkspace(WorkspaceMember member);
 }

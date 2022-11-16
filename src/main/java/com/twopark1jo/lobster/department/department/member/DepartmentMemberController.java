@@ -31,9 +31,9 @@ public class DepartmentMemberController {
     }
 
     @PostMapping("/{departmentId}/invitation")
-    public ResponseEntity addToDepartmentMemberList(@PathVariable String departmentId,
+    public ResponseEntity addDepartmentMemberList(@PathVariable String departmentId,
                                                    @RequestBody List<DepartmentMember> memberList) {
-        if(memberService.addToDepartment(departmentId, memberList)){
+        if(memberService.addToDepartment(memberList)){
             return new ResponseEntity(HttpStatus.CREATED);
         }
 

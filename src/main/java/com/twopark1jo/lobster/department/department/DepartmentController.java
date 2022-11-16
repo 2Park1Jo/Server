@@ -1,15 +1,16 @@
 package com.twopark1jo.lobster.department.department;
 
+import com.twopark1jo.lobster.department.department.member.DepartmentMember;
 import com.twopark1jo.lobster.exception.DepartmentException;
 import com.twopark1jo.lobster.exception.ErrorCode;
 import com.twopark1jo.lobster.exception.GlobalExceptionHandler;
+import com.twopark1jo.lobster.member.Member;
+import com.twopark1jo.lobster.member.MemberServiceImpl;
 import lombok.RequiredArgsConstructor;
-import org.apache.naming.HandlerRef;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -17,6 +18,7 @@ import java.util.List;
 public class DepartmentController {
 
     private final DepartmentServiceImpl departmentService;
+    private final MemberServiceImpl memberService;
     @Autowired
     private GlobalExceptionHandler exceptionHandler;
 
@@ -44,24 +46,22 @@ public class DepartmentController {
     }
 
     //워크스페이스의 부서 생성
-    @PostMapping("/workspace/department/create")
-    public ResponseEntity create(@RequestBody Department department){
-        boolean isDuplicatedDepartmentId =
-                departmentService.isExistingDepartment(department.getDepartmentId());
+    @PostMapping("workspace/department/create")
+    public ResponseEntity create(@RequestBody DepartmentCreation departmentCreation){
+        Department department = departmentCreation.getDepartment();    //생성할 부서 정보
+        List<DepartmentMember> departmentMemberList = departmentCreation.getDepartmentMemberList();  //부서에 추가할 회원 목록
 
-        boolean isDuplicatedDepartmentName = departmentService.isDepartmentNameInWorkspace(
-                        department.getWorkspaceId(), department.getDepartmentName());
+        if(departmentService.create(department)){
+            for (int i=0; i<departmentMemberList.size(); i++){   //부서 회원 정보에 생성한 부서 아이디 저장
+                departmentMemberList.get(i).setDepartmentId(department.getDepartmentId());
+            }
 
-        if(isDuplicatedDepartmentId){
-            throw new DepartmentException(ErrorCode.EXISTED_DEPARTMENT_ID);
+            memberService.addToDepartment(departmentMemberList); //부서회원정보에 회원 정보 저장
+
+            return new ResponseEntity<>(HttpStatus.CREATED);
         }
-        if(isDuplicatedDepartmentName){
-            throw new DepartmentException(ErrorCode.EXISTED_DEPARTMENT_NAME);
-        }
 
-        departmentService.create(department);
-
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        throw new DepartmentException(ErrorCode.EXISTED_DEPARTMENT_NAME);
     }
 
 
