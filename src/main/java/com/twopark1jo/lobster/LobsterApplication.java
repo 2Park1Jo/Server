@@ -1,5 +1,7 @@
 package com.twopark1jo.lobster;
 
+import com.twopark1jo.lobster.member.MemberRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -13,7 +15,6 @@ import java.time.format.DateTimeFormatter;
 public class LobsterApplication {
 
 	public static void main(String[] args) {
-
 		SpringApplication.run(LobsterApplication.class, args);
 	}
 

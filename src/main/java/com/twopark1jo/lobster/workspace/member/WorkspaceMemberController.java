@@ -50,7 +50,7 @@ public class WorkspaceMemberController {
                 continue;
             }
 
-            member.setWorkspaceId(workspaceId);
+            member.setWorkspaceId(workspaceId);       //워크스페이스 정보
             workspaceMemberRepository.save(member);
         }
 
