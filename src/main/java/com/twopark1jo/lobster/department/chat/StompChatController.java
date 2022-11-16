@@ -98,7 +98,6 @@ public class StompChatController {
     //"/pub/department/creation" : 부서 생성 + 회원 추가
     @MessageMapping(value = "/chat/department/creation")
     @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
-    @PostMapping("/test")
     public ResponseEntity createDepartment(@RequestBody DepartmentCreation departmentCreation){
         Department department = departmentCreation.getDepartment();    //생성할 부서 정보
         List<DepartmentMember> departmentMemberList = departmentCreation.getDepartmentMemberList();  //부서에 추가할 회원 목록
@@ -131,6 +130,13 @@ public class StompChatController {
         chatContentRepository.save(chatContent);  //채팅내용 저장
 
         simpMessagingTemplate.convertAndSend("/sub/chat/department/" + chatContent.getDepartmentId(), chatContent);
+    }
+
+    //"/pub/workspace/invitation" : 회원 추가 알림
+    @MessageMapping(value = "/chat/workspace/invitation")
+    public void announceAdditionOfWorkspaceMembers(String chatcontent){
+
+        simpMessagingTemplate.convertAndSend("/sub/chat/workspace", chatcontent);
     }
 
     @GetMapping("department/{departmentId}/chat/content")

@@ -64,7 +64,6 @@ public class DepartmentController {
         throw new DepartmentException(ErrorCode.EXISTED_DEPARTMENT_NAME);
     }
 
-
     //회원이 속한 워크스페이스 부서 목록
     @GetMapping("/member/{email}/workspace/{workspaceId}/departments")
     public ResponseEntity<List<Department>> getDepartmentListByWorkspaceAndMember(@PathVariable ("email") String email,

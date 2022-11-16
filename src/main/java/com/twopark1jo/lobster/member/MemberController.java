@@ -41,7 +41,7 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity checkLogin(@RequestBody Member member){ //HttpServletRequest request){
+    public ResponseEntity checkLogin(@RequestBody Member member){
         if(memberService.login(member)){
             return new ResponseEntity<>(HttpStatus.OK);
         }
