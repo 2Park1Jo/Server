@@ -61,11 +61,6 @@ public class StompChatController {
         return date.format(myPattern);
     }
 
-    //채팅내용 아이디 = 부서아이디 + 현재 시각
-    private String getTableId(String tableId, String date){
-        return tableId.substring(0, 3) + date;
-    }
-
     //"/pub/chat/invitation" : 기존 부서에 회원 추가
     @MessageMapping(value = "/chat/invitation")
     public ResponseEntity inviteToDepartment(List<DepartmentMember> departmentMemberList){
@@ -79,7 +74,7 @@ public class StompChatController {
         }
 
         chatContent = ChatContent.builder()                      //채팅방 참여 메세지
-                .chatId(getTableId(departmentId, date))
+                .chatId((departmentId + date))
                 .departmentId(departmentId)
                 .email(null)
                 .content(getMemberNameList(departmentMemberList) + "님이 채팅방에 참여하였습니다.")
