@@ -28,4 +28,6 @@ public interface MemberService {
     boolean addToDepartment(List<DepartmentMember> memberList);
 
     void addToWorkspace(WorkspaceMember member);
+
+    void addToNoticeBoard(List<WorkspaceMember> workspaceMemberList);
 }

@@ -18,4 +18,6 @@ public interface DepartmentRepository extends JpaRepository<Department, String> 
             @Param("workspace_id") String workspaceId, @Param("email") String email);
 
     boolean existsByWorkspaceIdAndDepartmentName(String workspaceId, String departmentName);
+
+    Department findByWorkspaceIdAndDepartmentName(String workspaceId, String departmentName);
 }

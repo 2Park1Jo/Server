@@ -88,8 +88,6 @@ public class WorkspaceController {
         Department department = new Department("", departmentId,
                 "\uD83D\uDCE2 공지방", null, null);
 
-        System.out.println(memberRepository.findByEmail("abc@naver.com").getMemberName());
-
         departmentService.create(department);      //기본 공지방 생성
 
         for(int index = 0; index < workspaceMemberList.size(); index++){    //워크스페이스에 회원목록 추가
@@ -97,13 +95,10 @@ public class WorkspaceController {
             member.setWorkspaceId(workspace.getWorkspaceId());              //생성한 워크스페이스 아이디 추가
             member.setMemberName(memberRepository.findByEmail(member.getEmail()).getMemberName());   //회원 이름
 
-
-            System.out.println("member = " + member.toString());
             workspaceMemberRepository.save(workspaceMemberList.get(index));     //워크스페이스회원 목록에 회원 추가
             departmentMemberRepository.save(new DepartmentMember(departmentId,  //생성된 공지방에 회원정보 추가
                     member.getEmail(), member.getMemberName(),null, null));
         }
-
 
         return new ResponseEntity(HttpStatus.CREATED);
     }
