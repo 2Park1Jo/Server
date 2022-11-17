@@ -1,14 +1,13 @@
 package com.twopark1jo.lobster.department.department;
 
+import com.twopark1jo.lobster.bucket.Bucket;
+import com.twopark1jo.lobster.bucket.BucketRepository;
 import com.twopark1jo.lobster.department.department.member.DepartmentMember;
 import com.twopark1jo.lobster.department.department.member.DepartmentMemberRepository;
-import com.twopark1jo.lobster.member.Member;
 import com.twopark1jo.lobster.utility.Constants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.yaml.snakeyaml.scanner.Constant;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -21,6 +20,7 @@ public class DepartmentServiceImpl implements DepartmentService{
 
     final private DepartmentRepository departmentRepository;
     final private DepartmentMemberRepository departmentMemberRepository;
+    final private BucketRepository bucketRepository;
 
     private String getLocalDateTime(){
         LocalDateTime date = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDateTime().withNano(0);
@@ -34,6 +34,7 @@ public class DepartmentServiceImpl implements DepartmentService{
         return workspaceId.substring(0, 3) + date;
     }
 
+    //부서회원 DB에 회원정보 추가
     @Override
     public void addDepartmentMember(DepartmentMember member) {
         if(departmentMemberRepository.existsByDepartmentIdAndEmail(member.getDepartmentId(), member.getEmail())){
@@ -43,6 +44,7 @@ public class DepartmentServiceImpl implements DepartmentService{
         }//부서에 이미 존재하는 회원일 경우 저장X
     }
 
+    //부서생성
     @Override
     public boolean create(Department department) {
         String departmentId = getDepartmentId(department.getWorkspaceId());
@@ -56,6 +58,8 @@ public class DepartmentServiceImpl implements DepartmentService{
 
         department.setDepartmentId(departmentId);      //부서 아이디(워크스페이스아이디 + 시간)
         departmentRepository.save(department);         //DB에 부서 정보 저장
+
+        bucketRepository.save(new Bucket("", departmentId));  //부서 버킷 생성
 
         return Constants.IS_DATA_SAVED_SUCCESSFULLY;
     }

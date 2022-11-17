@@ -17,5 +17,4 @@ public class LobsterApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(LobsterApplication.class, args);
 	}
-
 }

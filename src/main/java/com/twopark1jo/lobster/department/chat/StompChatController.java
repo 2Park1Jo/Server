@@ -1,6 +1,8 @@
 package com.twopark1jo.lobster.department.chat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.twopark1jo.lobster.bucket.BucketService;
+import com.twopark1jo.lobster.bucket.BucketServiceImpl;
 import com.twopark1jo.lobster.department.department.*;
 import com.twopark1jo.lobster.department.department.member.DepartmentMember;
 import com.twopark1jo.lobster.member.MemberServiceImpl;
@@ -25,6 +27,7 @@ public class StompChatController {
     private final ChatContentRepository chatContentRepository;
     private final DepartmentServiceImpl departmentService;
     private final MemberServiceImpl memberService;
+    private final BucketServiceImpl bucketService;
     private final SimpMessagingTemplate simpMessagingTemplate;  //특정 브로커로 메세지 전달
 
     //client가 send 경로(setApplicationDestinationPrefixes)

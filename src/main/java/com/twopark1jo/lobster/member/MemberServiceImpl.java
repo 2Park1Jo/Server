@@ -4,14 +4,10 @@ import com.twopark1jo.lobster.department.department.Department;
 import com.twopark1jo.lobster.department.department.DepartmentRepository;
 import com.twopark1jo.lobster.department.department.member.DepartmentMember;
 import com.twopark1jo.lobster.department.department.member.DepartmentMemberRepository;
-import com.twopark1jo.lobster.exception.ErrorCode;
-import com.twopark1jo.lobster.exception.MemberException;
 import com.twopark1jo.lobster.utility.Constants;
 import com.twopark1jo.lobster.workspace.member.WorkspaceMember;
 import com.twopark1jo.lobster.workspace.member.WorkspaceMemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
