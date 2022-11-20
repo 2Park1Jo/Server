@@ -7,5 +7,4 @@ import java.util.List;
 
 public interface BucketHistoryRepository extends JpaRepository<BucketHistory, String> {
 
-    List<BucketHistory> findAllByDepartmentId(String departmentId);
 }

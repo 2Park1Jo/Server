@@ -1,7 +1,6 @@
 package com.twopark1jo.lobster.department.chat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.twopark1jo.lobster.bucket.BucketService;
 import com.twopark1jo.lobster.bucket.BucketServiceImpl;
 import com.twopark1jo.lobster.department.department.*;
 import com.twopark1jo.lobster.department.department.member.DepartmentMember;
@@ -27,6 +26,7 @@ public class StompChatController {
     private final ChatContentRepository chatContentRepository;
     private final DepartmentServiceImpl departmentService;
     private final MemberServiceImpl memberService;
+
     private final BucketServiceImpl bucketService;
     private final SimpMessagingTemplate simpMessagingTemplate;  //특정 브로커로 메세지 전달
 
@@ -122,8 +122,10 @@ public class StompChatController {
     @MessageMapping(value = "/chat/message")
     public void message(ChatContent chatContent){
         System.out.println("chatMessage = " + chatContent.toString());
+        String content = chatContent.getContent().toString();
 
         chatContent.setChatId(chatContent.getDepartmentId() + chatContent.getDate());   //채팅아이디(방 아이디 + 시간)
+        chatContent.setContent(content);
 
         chatContentRepository.save(chatContent);  //채팅내용 저장
 
