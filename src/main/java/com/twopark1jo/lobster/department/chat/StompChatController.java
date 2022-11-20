@@ -13,6 +13,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -120,13 +121,14 @@ public class StompChatController {
 
     //"/pub/chat/message" : 메세지 전송 -> "/sub/chat/department/{departmentId}"로 해당 채팅방으로 메세지 전달
     @MessageMapping(value = "/chat/message")
-    public void message(ChatContent chatContent){
-        System.out.println("chatMessage = " + chatContent.toString());
+    public void message(ChatContent chatContent) throws UnsupportedEncodingException {
+
         String content = chatContent.getContent().toString();
 
         chatContent.setChatId(chatContent.getDepartmentId() + chatContent.getDate());   //채팅아이디(방 아이디 + 시간)
-        chatContent.setContent(content);
+        chatContent.setContent(new String(content.getBytes("UTF-8"), "ISO-8859-1"));
 
+        System.out.println("chatMessage = " + chatContent.toString());
         chatContentRepository.save(chatContent);  //채팅내용 저장
 
         simpMessagingTemplate.convertAndSend("/sub/chat/department/" + chatContent.getDepartmentId(), chatContent);
