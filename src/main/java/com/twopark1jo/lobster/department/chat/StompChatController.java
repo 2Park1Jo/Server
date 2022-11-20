@@ -125,13 +125,11 @@ public class StompChatController {
     public void message(ChatContent chatContent) throws UnsupportedEncodingException {
         chatContent.setChatId(chatContent.getDepartmentId() + chatContent.getDate());   //채팅아이디(방 아이디 + 시간)
 
-        System.out.println(chatContent.getContent());
-        System.out.println(URLEncoder.encode(chatContent.getContent(), "UTF-8"));
-        System.out.println(new String(chatContent.getContent().getBytes("UTF-8"), "ISO-8859-1"));
-
-        chatContent.setContent(URLEncoder.encode(chatContent.getContent(), "UTF-8"));
-
         System.out.println("chatMessage = " + chatContent.toString());
+
+        System.out.println("before to string = " + chatContent.getContent());
+        chatContent.setContent(chatContent.getContent().toString());
+        System.out.println("after to string = " + chatContent.getContent());
         chatContentRepository.save(chatContent);  //채팅내용 저장
 
         simpMessagingTemplate.convertAndSend("/sub/chat/department/" + chatContent.getDepartmentId(), chatContent);
