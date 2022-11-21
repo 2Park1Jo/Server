@@ -62,6 +62,12 @@ public class StompChatController {
     //대한민국 서울 기준 현재시각
     private String getLocalDateTime(){
         LocalDateTime date = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDateTime().withNano(0);
+        DateTimeFormatter myPattern = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        return date.format(myPattern);
+    }
+    private String getTableId(){
+        LocalDateTime date = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDateTime().withNano(0);
         DateTimeFormatter myPattern = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
         return date.format(myPattern) + date.getNano();
@@ -72,7 +78,6 @@ public class StompChatController {
     public ResponseEntity inviteToDepartment(List<DepartmentMember> departmentMemberList){
         String departmentId = departmentMemberList.get(0).getDepartmentId();
         ChatContent chatContent;
-        String date = getLocalDateTime();
 
         if(memberService.addToDepartment(departmentMemberList)   //부서회원DB에 부서회원목록 저장
             == !Constants.IS_DATA_SAVED_SUCCESSFULLY){
@@ -80,15 +85,17 @@ public class StompChatController {
         }
 
         chatContent = ChatContent.builder()                      //채팅방 참여 메세지
-                .chatId((departmentId + date))
+                .chatId(getTableId())
                 .departmentId(departmentId)
                 .email(null)
                 .content(getMemberNameList(departmentMemberList) + "님이 채팅방에 참여하였습니다.")
-                .date(date.toString())
+                .date(getLocalDateTime())
                 .contentType("-1")
                 .link(null)
                 .build();
 
+
+        System.out.println("chatContent = " + chatContent.toString());
         chatContentRepository.save(chatContent);
         simpMessagingTemplate.convertAndSend(
                 "/sub/chat/department/" + departmentId, chatContent);
