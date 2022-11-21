@@ -16,7 +16,7 @@ import java.sql.Timestamp;
 @Builder
 public class ChatContent {
 
-    @Id
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "chat_id")
     private String chatId;       //채팅 아이디
 
