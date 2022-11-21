@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.Normalizer;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -127,6 +128,9 @@ public class StompChatController {
 
         System.out.println("chatMessage = " + chatContent.toString());
 
+        String result = Normalizer.normalize(chatContent.getContent(), Normalizer.Form.NFC);
+        System.out.println("result = " + result);
+        
         System.out.println("before to string = " + chatContent.getContent());
         chatContent.setContent(chatContent.getContent().toString());
         System.out.println("after to string = " + chatContent.getContent());
