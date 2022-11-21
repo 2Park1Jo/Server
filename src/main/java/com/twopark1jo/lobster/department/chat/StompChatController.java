@@ -128,12 +128,9 @@ public class StompChatController {
 
         System.out.println("chatMessage = " + chatContent.toString());
 
-        String result = Normalizer.normalize(chatContent.getContent(), Normalizer.Form.NFC);
-        System.out.println("result = " + result);
+        String content = Normalizer.normalize(chatContent.getContent(), Normalizer.Form.NFC);  //윈도우, 맥 자소분리 합치기
         
-        System.out.println("before to string = " + chatContent.getContent());
-        chatContent.setContent(chatContent.getContent().toString());
-        System.out.println("after to string = " + chatContent.getContent());
+        chatContent.setContent(content);
         chatContentRepository.save(chatContent);  //채팅내용 저장
 
         simpMessagingTemplate.convertAndSend("/sub/chat/department/" + chatContent.getDepartmentId(), chatContent);
