@@ -124,7 +124,6 @@ public class StompChatController {
     //"/pub/chat/message" : 메세지 전송 -> "/sub/chat/department/{departmentId}"로 해당 채팅방으로 메세지 전달
     @MessageMapping(value = "/chat/message")
     public void message(ChatContent chatContent) throws UnsupportedEncodingException {
-        chatContent.setChatId(chatContent.getDepartmentId() + chatContent.getDate());   //채팅아이디(방 아이디 + 시간)
         String content;
 
         System.out.println("chatMessage = " + chatContent.toString());
