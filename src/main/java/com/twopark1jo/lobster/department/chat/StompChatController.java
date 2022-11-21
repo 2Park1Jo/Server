@@ -123,7 +123,6 @@ public class StompChatController {
 
     //"/pub/chat/message" : 메세지 전송 -> "/sub/chat/department/{departmentId}"로 해당 채팅방으로 메세지 전달
     @MessageMapping(value = "/chat/message")
-    @PostMapping("/test")
     public void message(@RequestBody ChatContent chatContent) {
         String content;
 
@@ -134,7 +133,7 @@ public class StompChatController {
 
         chatContentRepository.save(chatContent);  //채팅내용 저장
 
-        //simpMessagingTemplate.convertAndSend("/sub/chat/department/" + chatContent.getDepartmentId(), chatContent);
+        simpMessagingTemplate.convertAndSend("/sub/chat/department/" + chatContent.getDepartmentId(), chatContent);
     }
 
     //"/pub/workspace/invitation" : 회원 추가 알림
