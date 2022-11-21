@@ -66,12 +66,6 @@ public class StompChatController {
 
         return date.format(myPattern);
     }
-    private String getTableId(){
-        LocalDateTime date = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDateTime().withNano(0);
-        DateTimeFormatter myPattern = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
-
-        return date.format(myPattern) + date.getNano();
-    }
 
     //"/pub/chat/invitation" : 기존 부서에 회원 추가
     @MessageMapping(value = "/chat/invitation")
@@ -85,7 +79,6 @@ public class StompChatController {
         }
 
         chatContent = ChatContent.builder()                      //채팅방 참여 메세지
-                .chatId(getTableId())
                 .departmentId(departmentId)
                 .email(null)
                 .content(getMemberNameList(departmentMemberList) + "님이 채팅방에 참여하였습니다.")
