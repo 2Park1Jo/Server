@@ -57,21 +57,17 @@ public class WorkspaceController {
 
     private String getLocalDateTime(){
         LocalDateTime date = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDateTime().withNano(0);
-        DateTimeFormatter myPattern = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter myPattern = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
-        return date.format(myPattern);
-    }
-
-    private String getTableId(String workspaceId){
-        String date = getLocalDateTime();
-        return workspaceId.substring(0, 3) + date;
+        return date.format(myPattern) + date.getNano();
     }
 
     @PostMapping("workspace/create")
     public ResponseEntity create(@RequestBody WorkspaceCreation workspaceCreation){
         Workspace workspace = workspaceCreation.getWorkspace();   //생성할 워크스페이스 정보
         List<WorkspaceMember> workspaceMemberList = workspaceCreation.getWorkspaceMemberList();  //추가할 회원 목록
-        WorkspaceMember member;
+        WorkspaceMember workspaceMember;
+        DepartmentMember departmentMember;
         String departmentId;
 
         boolean isWorkspace = workspaceRepository.existsById(workspace.getWorkspaceId());
@@ -81,23 +77,25 @@ public class WorkspaceController {
             return ResponseEntity.badRequest().build();
         }
 
-        workspace.setWorkspaceId(getTableId(email));
+        workspace.setWorkspaceId(getLocalDateTime());
         workspaceRepository.save(workspace);        //워크스페이스 생성
 
-        departmentId = getTableId(workspace.getWorkspaceId());
-        Department department = new Department("", departmentId,
+        departmentId = getLocalDateTime();
+        Department department = new Department(departmentId, workspace.getWorkspaceId(),
                 "\uD83D\uDCE2 공지방", null, null);
 
         departmentService.create(department);      //기본 공지방 생성
 
         for(int index = 0; index < workspaceMemberList.size(); index++){    //워크스페이스에 회원목록 추가
-            member = workspaceMemberList.get(index);
-            member.setWorkspaceId(workspace.getWorkspaceId());              //생성한 워크스페이스 아이디 추가
-            member.setMemberName(memberRepository.findByEmail(member.getEmail()).getMemberName());   //회원 이름
+            workspaceMember = workspaceMemberList.get(index);
+            workspaceMember.setWorkspaceId(workspace.getWorkspaceId());              //생성한 워크스페이스 아이디 추가
+            workspaceMember.setMemberName(memberRepository.findByEmail(workspaceMember.getEmail()).getMemberName());   //회원 이름
 
-            workspaceMemberRepository.save(workspaceMemberList.get(index));     //워크스페이스회원 목록에 회원 추가
-            departmentMemberRepository.save(new DepartmentMember(departmentId,  //생성된 공지방에 회원정보 추가
-                    member.getEmail(), member.getMemberName(),null, null));
+            workspaceMemberRepository.save(workspaceMember);     //워크스페이스회원 목록에 회원 추가
+
+            departmentMember = new DepartmentMember(departmentId,
+                    workspaceMember.getEmail(), workspaceMember.getMemberName(),null, null);
+            departmentMemberRepository.save(departmentMember);  //생성된 공지방에 회원정보 추가
         }
 
         return new ResponseEntity(HttpStatus.CREATED);

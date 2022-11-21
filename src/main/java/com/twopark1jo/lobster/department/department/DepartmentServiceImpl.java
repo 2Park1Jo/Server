@@ -1,7 +1,5 @@
 package com.twopark1jo.lobster.department.department;
 
-import com.twopark1jo.lobster.bucket.Bucket;
-import com.twopark1jo.lobster.bucket.BucketRepository;
 import com.twopark1jo.lobster.department.department.member.DepartmentMember;
 import com.twopark1jo.lobster.department.department.member.DepartmentMemberRepository;
 import com.twopark1jo.lobster.utility.Constants;
@@ -20,18 +18,12 @@ public class DepartmentServiceImpl implements DepartmentService{
 
     final private DepartmentRepository departmentRepository;
     final private DepartmentMemberRepository departmentMemberRepository;
-    final private BucketRepository bucketRepository;
 
     private String getLocalDateTime(){
         LocalDateTime date = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDateTime().withNano(0);
-        DateTimeFormatter myPattern = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter myPattern = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
-        return date.format(myPattern);
-    }
-
-    private String getDepartmentId(String workspaceId){
-        String date = getLocalDateTime();
-        return workspaceId.substring(0, 3) + date;
+        return date.format(myPattern) + date.getNano();
     }
 
     //부서회원 DB에 회원정보 추가
@@ -47,7 +39,7 @@ public class DepartmentServiceImpl implements DepartmentService{
     //부서생성
     @Override
     public boolean create(Department department) {
-        String departmentId = getDepartmentId(department.getWorkspaceId());
+        String departmentId = getLocalDateTime();
 
         boolean isDuplicatedDepartmentName = isDepartmentNameInWorkspace(
                 department.getWorkspaceId(), department.getDepartmentName());
@@ -59,7 +51,7 @@ public class DepartmentServiceImpl implements DepartmentService{
         department.setDepartmentId(departmentId);      //부서 아이디(워크스페이스아이디 + 시간)
         departmentRepository.save(department);         //DB에 부서 정보 저장
 
-        bucketRepository.save(new Bucket("", departmentId));  //부서 버킷 생성
+        //bucketRepository.save(new Bucket(getLocalDateTime(), departmentId));  //부서 버킷 생성
 
         return Constants.IS_DATA_SAVED_SUCCESSFULLY;
     }
