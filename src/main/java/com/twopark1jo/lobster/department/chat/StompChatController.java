@@ -133,17 +133,11 @@ public class StompChatController {
     public void message(ChatContent chatContent) throws UnsupportedEncodingException {
         chatContent.setChatId(chatContent.getDepartmentId() + chatContent.getDate());   //채팅아이디(방 아이디 + 시간)
         String content;
-        String link;
 
         System.out.println("chatMessage = " + chatContent.toString());
 
         content = Normalizer.normalize(chatContent.getContent(), Normalizer.Form.NFC);  //윈도우, 맥 자소분리 합치기
         chatContent.setContent(content);
-
-        if(chatContent.getContentType().equals("0") != Constants.IS_TEXT){
-            link = Normalizer.normalize(chatContent.getLink(), Normalizer.Form.NFC);    //윈도우, 맥 자소분리 합치기
-            chatContent.setLink(link);
-        }
 
         chatContentRepository.save(chatContent);  //채팅내용 저장
 
