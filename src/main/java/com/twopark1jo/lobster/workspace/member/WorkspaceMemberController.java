@@ -53,8 +53,13 @@ public class WorkspaceMemberController {
             }
 
             member.setWorkspaceId(workspaceId);       //워크스페이스 회원정보에 워크스페이스 정보 저장
+            member.setMemberName(memberService.getMemberName(member.getEmail())); //회원 이름 저장
             workspaceMemberRepository.save(member);   //워크스페이스 회원정보 저장
+
+            System.out.println("member = " + member.toString());
         }
+
+        System.out.println("===================================");
 
         memberService.addToNoticeBoard(workspaceMemberList);   //공지방에 회원 초대
 

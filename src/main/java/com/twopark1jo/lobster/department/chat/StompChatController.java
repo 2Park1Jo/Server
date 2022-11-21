@@ -61,9 +61,9 @@ public class StompChatController {
     //대한민국 서울 기준 현재시각
     private String getLocalDateTime(){
         LocalDateTime date = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDateTime().withNano(0);
-        DateTimeFormatter myPattern = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter myPattern = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
-        return date.format(myPattern);
+        return date.format(myPattern) + date.getNano();
     }
 
     //"/pub/chat/invitation" : 기존 부서에 회원 추가
@@ -138,6 +138,7 @@ public class StompChatController {
     //"/pub/workspace/invitation" : 회원 추가 알림
     @MessageMapping(value = "/chat/workspace/invitation")
     public void announceAdditionOfWorkspaceMembers(String chatcontent){
+
 
         simpMessagingTemplate.convertAndSend("/sub/chat/workspace", chatcontent);
     }

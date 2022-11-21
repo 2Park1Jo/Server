@@ -131,14 +131,23 @@ public class MemberServiceImpl implements MemberService{
 
         department =departmentRepository.findByWorkspaceIdAndDepartmentName(workspaceId, "📢 공지방");
 
+        System.out.println("department = " + department.toString());
+
         for(int index = 0; index < workspaceMemberList.size(); index++){  //공지방에 추가할 회원 목록
             workspaceMember = workspaceMemberList.get(index);
+            System.out.println("workspaceMember = " + workspaceMember.toString());
 
             departmentMember = new DepartmentMember(department.getDepartmentId(), workspaceMember.getEmail(),
                     workspaceMember.getMemberName(), null, null);
+            System.out.println("departmentMember = " + departmentMember.toString());
             departmentMemberList.add(departmentMember);
+            System.out.println("departmentMemberList = " + departmentMemberList.get(index).toString() + "\n");
         }
 
         addToDepartment(departmentMemberList);   //해당 워크스페이스 공지방DB에 워크스페이스 회원정보 추가
+    }
+
+    public String getMemberName(String email){
+        return memberRepository.findByEmail(email).getMemberName();
     }
 }
