@@ -163,7 +163,7 @@ public class StompChatController {
         content = Normalizer.normalize(chatContent.getContent(), Normalizer.Form.NFC);  //윈도우, 맥 자소분리 합치기
         chatContent.setContent(content);
 
-        //chatContentRepository.save(chatContent);  //채팅내용 저장
+        chatContentRepository.save(chatContent);  //채팅내용 저장
 
         simpMessagingTemplate.convertAndSend("/sub/chat/department/" + chatContent.getDepartmentId(), chatContent);
     }
@@ -215,12 +215,12 @@ public class StompChatController {
     public void onConnect(SessionConnectEvent event){
         sessionId = event.getMessage().getHeaders().get("simpSessionId").toString();     //현재 연결을 시도한
 
-        System.out.println(">>>>>>>>>>>>>>>>>");
+        /*System.out.println(">>>>>>>>>>>>>>>>>");
         System.out.println("stompCommand : " + event.getMessage().getHeaders().get("stompCommand"));
         System.out.println("connect sessionId : " + sessionId);System.out.println();
         printSessionList();
         System.out.println();
-        System.out.println(">>>>>>>>>>>>>>>>>\n");
+        System.out.println(">>>>>>>>>>>>>>>>>\n");*/
     }
 
     //stomp연결이 끊겼을 경우
@@ -230,13 +230,13 @@ public class StompChatController {
 
         sessionList.remove(sessionId);
 
-        System.out.println(">>>>>>>>>>>>>>>>>");
+        /*System.out.println(">>>>>>>>>>>>>>>>>");
         System.out.println("stompCommand : " + event.getMessage().getHeaders().get("stompCommand"));
         System.out.println("disconnect sessionId : " + sessionId);
         System.out.println();
         printSessionList();
         System.out.println();
-        System.out.println(">>>>>>>>>>>>>>>>>\n");
+        System.out.println(">>>>>>>>>>>>>>>>>\n");*/
 
         simpMessagingTemplate.convertAndSend("/sub/chat/department/" + departmentId, getListOfConnectedMembers());
     }
