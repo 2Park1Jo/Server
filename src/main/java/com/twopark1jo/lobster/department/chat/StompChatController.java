@@ -31,7 +31,8 @@ public class StompChatController {
     private final DepartmentServiceImpl departmentService;
     private final MemberServiceImpl memberService;
     private final SimpMessagingTemplate simpMessagingTemplate;  //특정 브로커로 메세지 전달
-    private Map<String, String> sessionList = new HashMap<String, String>();
+    private Map<String, Map> sessionListByWorkspace = new HashMap<String, Map>();  //워크스페이스별 세션목록
+    private Map<String, String> sessionList = new HashMap<String, String>();       //부서별 세션목록
     private String email;
     private String departmentId;
 
@@ -45,12 +46,6 @@ public class StompChatController {
             listOfConnectedMembers.add(connectedMemberEmail);
         }
 
-        System.out.println();
-        for (int i=0; i<listOfConnectedMembers.size(); i++){
-            System.out.println("email = " + listOfConnectedMembers.get(i));   //접속한 회원 이메일 로그
-        }
-        System.out.println();
-
         return listOfConnectedMembers;
     }
 
@@ -60,6 +55,8 @@ public class StompChatController {
     public void enter(ChatContent chatContent){
         email = chatContent.getEmail();  //현재 stomp client연결을 시도한 회원의 이메일
         departmentId = chatContent.getDepartmentId(); //client연결이 시도된 부서의 아이디
+
+        System.out.println(">>>>>>>>>>>email = " + email);
 
         simpMessagingTemplate.convertAndSend("/sub/chat/department/" + departmentId, getListOfConnectedMembers());
     }
@@ -150,7 +147,7 @@ public class StompChatController {
         content = Normalizer.normalize(chatContent.getContent(), Normalizer.Form.NFC);  //윈도우, 맥 자소분리 합치기
         chatContent.setContent(content);
 
-        chatContentRepository.save(chatContent);  //채팅내용 저장
+        //chatContentRepository.save(chatContent);  //채팅내용 저장
 
         simpMessagingTemplate.convertAndSend("/sub/chat/department/" + chatContent.getDepartmentId(), chatContent);
     }
@@ -174,15 +171,32 @@ public class StompChatController {
         return ResponseEntity.notFound().build();
     }
 
+    private String findKeyByValue(String value){
+        for(String key : sessionList.keySet()) {
+            // 키와 매핑된 값이랑 equals() 메서드에 전달된 값이랑 일치하면 반복문을 종료합니다.
+            if(sessionList.get(key).equals(value)) { // 키가 null이면 NullPointerException 예외 발생
+                return key;
+            }
+        }
+        return null;
+    }
+
     //stomp가 연결되었을 경우
     @EventListener(SessionConnectEvent.class)
     public void onConnect(SessionConnectEvent event){
         String sessionId = event.getMessage().getHeaders().get("simpSessionId").toString();
+        String key;
+
+        if(sessionList.containsValue(email)){  //사용자가 새로고침을 하는 경우 -> session값 변경
+            key = findKeyByValue(email);
+            sessionList.remove(key);
+        }
 
         sessionList.put(sessionId, email);    //stomp연결을 시도한 회원의 세션아이디와 이메일값 저장
 
         System.out.println(">>>>>>>>>>>>>>>>>");
         System.out.println("stompCommand : " + event.getMessage().getHeaders().get("stompCommand"));
+        System.out.println("email = " + email);
         System.out.println("connect sessionId : " + sessionId);
         System.out.println(">>>>>>>>>>>>>>>>>");
 
@@ -212,7 +226,6 @@ public class StompChatController {
         System.out.println("disconnect sessionId : " + sessionId);
         System.out.println(">>>>>>>>>>>>>>>>>");
 
-        sessionList.remove(sessionId);
         simpMessagingTemplate.convertAndSend("/sub/chat/department/" + departmentId, getListOfConnectedMembers());
     }
 
