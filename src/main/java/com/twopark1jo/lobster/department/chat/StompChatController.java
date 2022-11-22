@@ -33,7 +33,7 @@ public class StompChatController {
     private final SimpMessagingTemplate simpMessagingTemplate;  //특정 브로커로 메세지 전달
     private Map<String, Map> sessionListByWorkspace = new HashMap<String, Map>();  //워크스페이스별 세션목록
     private Map<String, String> sessionList = new HashMap<String, String>();       //부서별 세션목록
-    private String email;
+    private String sessionId;
     private String departmentId;
 
     private List<String> getListOfConnectedMembers(){
@@ -53,10 +53,22 @@ public class StompChatController {
     //"/pub/chat/enter" : 회원 입장 -> "/sub/chat/department/{departmentId}"로 채팅방에 참여한 회원 이메일 전송
     @MessageMapping(value = "/chat/enter")
     public void enter(ChatContent chatContent){
-        email = chatContent.getEmail();  //현재 stomp client연결을 시도한 회원의 이메일
+        String email = chatContent.getEmail();        //현재 stomp client연결을 시도한 회원의 이메일
         departmentId = chatContent.getDepartmentId(); //client연결이 시도된 부서의 아이디
 
-        System.out.println(">>>>>>>>>>>email = " + email);
+        System.out.println("email = " + email);
+        System.out.println(">>>>>>>>>>>>>>>>>");
+
+        String key;
+
+        if(sessionList.containsValue(email)){  //사용자가 새로고침을 하는 경우 기존 세션 저장값 삭제
+            key = findKeyByValue(email);
+            sessionList.remove(key);
+        }
+
+        sessionList.put(sessionId, email);    //stomp연결을 시도한 회원의 세션아이디 저장
+
+        printSessionList();  //현재 연결된 회원 목록
 
         simpMessagingTemplate.convertAndSend("/sub/chat/department/" + departmentId, getListOfConnectedMembers());
     }
@@ -184,23 +196,11 @@ public class StompChatController {
     //stomp가 연결되었을 경우
     @EventListener(SessionConnectEvent.class)
     public void onConnect(SessionConnectEvent event){
-        String sessionId = event.getMessage().getHeaders().get("simpSessionId").toString();
-        String key;
-
-        if(sessionList.containsValue(email)){  //사용자가 새로고침을 하는 경우 -> session값 변경
-            key = findKeyByValue(email);
-            sessionList.remove(key);
-        }
-
-        sessionList.put(sessionId, email);    //stomp연결을 시도한 회원의 세션아이디와 이메일값 저장
+        sessionId = event.getMessage().getHeaders().get("simpSessionId").toString();
 
         System.out.println(">>>>>>>>>>>>>>>>>");
         System.out.println("stompCommand : " + event.getMessage().getHeaders().get("stompCommand"));
-        System.out.println("email = " + email);
         System.out.println("connect sessionId : " + sessionId);
-        System.out.println(">>>>>>>>>>>>>>>>>");
-
-        printSessionList();  //현재 연결된 회원 목록
     }
 
     void printSessionList(){
