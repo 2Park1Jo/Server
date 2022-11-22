@@ -61,16 +61,24 @@ public class StompChatController {
         String key;
 
         if(sessionList.containsValue(email)){  //사용자가 새로고침을 하는 경우 기존 세션 저장값 삭제
+            System.out.println("사용자의 새로고침");
             key = findKeyByValue(email);
             sessionList.remove(key);
+            System.out.println(">>>>>>>>>>>>>>>>>");
+            System.out.println("사용자의 새로고침 email : " + email);
+            printSessionList();
+            System.out.println();
+            System.out.println(">>>>>>>>>>>>>>>>>\n");
         }
 
-        sessionList.put(sessionId, email);    //stomp연결을 시도한 회원의 세션아이디 저장
+        sessionList.put(sessionId, email);     //stomp연결을 시도한 회원의 세션아이디 저장
 
-        System.out.println("email = " + email);
-        System.out.println();
-        printSessionList();  //현재 연결된 회원 목록
         System.out.println(">>>>>>>>>>>>>>>>>");
+        System.out.println("email : " + email);
+        System.out.println("connect sessionId : " + sessionId);System.out.println();
+        printSessionList();
+        System.out.println();
+        System.out.println(">>>>>>>>>>>>>>>>>\n");
 
         simpMessagingTemplate.convertAndSend("/sub/chat/department/" + departmentId, getListOfConnectedMembers());
     }
@@ -211,11 +219,14 @@ public class StompChatController {
     //stomp가 연결되었을 경우
     @EventListener(SessionConnectEvent.class)
     public void onConnect(SessionConnectEvent event){
-        sessionId = event.getMessage().getHeaders().get("simpSessionId").toString();
+        sessionId = event.getMessage().getHeaders().get("simpSessionId").toString();     //현재 연결을 시도한
 
         System.out.println(">>>>>>>>>>>>>>>>>");
         System.out.println("stompCommand : " + event.getMessage().getHeaders().get("stompCommand"));
-        System.out.println("connect sessionId : " + sessionId);
+        System.out.println("connect sessionId : " + sessionId);System.out.println();
+        printSessionList();
+        System.out.println();
+        System.out.println(">>>>>>>>>>>>>>>>>\n");
     }
 
     //stomp연결이 끊겼을 경우
@@ -228,32 +239,10 @@ public class StompChatController {
         System.out.println("disconnect sessionId : " + sessionId);
         System.out.println();
         printSessionList();
-        System.out.println(">>>>>>>>>>>>>>>>>");
+        System.out.println();
+        System.out.println(">>>>>>>>>>>>>>>>>\n");
 
         simpMessagingTemplate.convertAndSend("/sub/chat/department/" + departmentId, getListOfConnectedMembers());
-    }
-
-    @EventListener(SessionSubscribeEvent.class)
-    public void onSubscribe(SessionSubscribeEvent event){
-        String sessionId = event.getMessage().getHeaders().get("simpSessionId").toString();
-
-        System.out.println(">>>>>>>>>>>>>>>>>");
-        System.out.println("stompCommand : " + event.getMessage().getHeaders().get("stompCommand"));
-        System.out.println("subscribe sessionId : " + sessionId);
-        System.out.println();
-        printSessionList();
-        System.out.println(">>>>>>>>>>>>>>>>>");
-    }
-
-    @EventListener(SessionUnsubscribeEvent.class)
-    public void onUnsubscribe(SessionUnsubscribeEvent event){
-        String sessionId = event.getMessage().getHeaders().get("simpSessionId").toString();
-        System.out.println(">>>>>>>>>>>>>>>>>");
-        System.out.println("stompCommand : " + event.getMessage().getHeaders().get("stompCommand"));
-        System.out.println("unsubscribe sessionId : " + sessionId);
-        System.out.println();
-        printSessionList();
-        System.out.println(">>>>>>>>>>>>>>>>>");
     }
 
     @GetMapping("/workspace/{workspaceId}/chat/count")
