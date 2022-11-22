@@ -7,20 +7,21 @@ import com.twopark1jo.lobster.department.department.member.DepartmentMember;
 import com.twopark1jo.lobster.member.MemberServiceImpl;
 import com.twopark1jo.lobster.utility.Constants;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.event.EventListener;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.socket.messaging.SessionConnectEvent;
+import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.text.Normalizer;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,16 +33,28 @@ public class StompChatController {
 
     private final BucketServiceImpl bucketService;
     private final SimpMessagingTemplate simpMessagingTemplate;  //특정 브로커로 메세지 전달
+    private Map<String, String> sessionList = new HashMap<String, String>();
+    private String email;
 
     //client가 send 경로(setApplicationDestinationPrefixes)
     //"/pub/chat/enter" : 회원 입장 -> "/sub/chat/department/{departmentId}"로 채팅방에 참여한 회원 이메일 전송
     @MessageMapping(value = "/chat/enter")
     public void enter(ChatContent chatContent){
-        chatContent.setContent(chatContent.getEmail() + "님이 채팅방에 참여하였습니다.");
+        email = chatContent.getEmail();  //현재 stomp client연결을 시도한 회원의 이메일
+        List<String> listOfConnectedMembers = new ArrayList<>();
+        Iterator<String> mapIter = sessionList.keySet().iterator();
 
-        //chatContentRepository.save(chatContent);
+        while(mapIter.hasNext()){                 //현재 로그인한 회원의 세션목록
+            String sessionId = mapIter.next();
+            String connectedMemberEmail = sessionList.get(sessionId);
+            listOfConnectedMembers.add(connectedMemberEmail);
+        }
 
-        simpMessagingTemplate.convertAndSend("/sub/chat/department/" + chatContent.getDepartmentId(), chatContent);
+        for (int i=0; i<listOfConnectedMembers.size(); i++){
+            System.out.println("email = " + listOfConnectedMembers.get(i));   //접속한 회원 이메일 로그
+        }
+
+        simpMessagingTemplate.convertAndSend("/sub/chat/department/" + chatContent.getDepartmentId(), listOfConnectedMembers);
     }
 
     //부서에 초대한 회원의 명단
@@ -87,7 +100,6 @@ public class StompChatController {
                 .link(null)
                 .build();
 
-
         System.out.println("chatContent = " + chatContent.toString());
         chatContentRepository.save(chatContent);
         simpMessagingTemplate.convertAndSend(
@@ -131,7 +143,7 @@ public class StompChatController {
         content = Normalizer.normalize(chatContent.getContent(), Normalizer.Form.NFC);  //윈도우, 맥 자소분리 합치기
         chatContent.setContent(content);
 
-        chatContentRepository.save(chatContent);  //채팅내용 저장
+        //chatContentRepository.save(chatContent);  //채팅내용 저장
 
         simpMessagingTemplate.convertAndSend("/sub/chat/department/" + chatContent.getDepartmentId(), chatContent);
     }
@@ -140,10 +152,10 @@ public class StompChatController {
     @MessageMapping(value = "/chat/workspace/invitation")
     public void announceAdditionOfWorkspaceMembers(String chatcontent){
 
-
         simpMessagingTemplate.convertAndSend("/sub/chat/workspace", chatcontent);
     }
 
+    //부서별 채팅 데이터
     @GetMapping("department/{departmentId}/chat/content")
     public ResponseEntity<List<ChatContent>> getDepartmentChatContent(@PathVariable("departmentId") String departmentId){
         boolean isDepartment = departmentService.isExistingDepartment(departmentId);
@@ -154,4 +166,47 @@ public class StompChatController {
 
         return ResponseEntity.notFound().build();
     }
+
+    //stomp가 연결되었을 경우
+    @EventListener(SessionConnectEvent.class)
+    public void onConnect(SessionConnectEvent event){
+        String sessionId = event.getMessage().getHeaders().get("simpSessionId").toString();
+
+        sessionList.put(sessionId, email);    //stomp연결을 시도한 회원의 세션아이디와 이메일값 저장
+
+        System.out.println(">>>>>>>>>>>>>>>>>");
+        System.out.println("stompCommand : " + event.getMessage().getHeaders().get("stompCommand"));
+        System.out.println("connect sessionId : " + sessionId);
+        System.out.println(">>>>>>>>>>>>>>>>>");
+
+        printSessionList();
+        //sessions.put(sessionId, Integer.valueOf(userId));
+    }
+
+    void printSessionList(){
+        Iterator<String> mapIter = sessionList.keySet().iterator();
+
+        while(mapIter.hasNext()){
+            String key = mapIter.next();
+            String value = sessionList.get( key );
+
+            System.out.println(key+" : "+value);
+        }
+    }
+
+    //stomp연결이 끊겼을 경우
+    @EventListener(SessionDisconnectEvent.class)
+    public void onDisconnect(SessionDisconnectEvent event){
+        String sessionId = event.getMessage().getHeaders().get("simpSessionId").toString();
+
+        System.out.println(">>>>>>>>>>>>>>>>>");
+        System.out.println("stompCommand : " + event.getMessage().getHeaders().get("stompCommand"));
+        System.out.println("disconnect sessionId : " + sessionId);
+        System.out.println(">>>>>>>>>>>>>>>>>");
+
+        sessionList.remove(sessionId);
+    }
+
+
+
 }
