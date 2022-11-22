@@ -33,12 +33,9 @@ public class StompChatController {
     private final SimpMessagingTemplate simpMessagingTemplate;  //특정 브로커로 메세지 전달
     private Map<String, String> sessionList = new HashMap<String, String>();
     private String email;
+    private String departmentId;
 
-    //client가 send 경로(setApplicationDestinationPrefixes)
-    //"/pub/chat/enter" : 회원 입장 -> "/sub/chat/department/{departmentId}"로 채팅방에 참여한 회원 이메일 전송
-    @MessageMapping(value = "/chat/enter")
-    public void enter(ChatContent chatContent){
-        email = chatContent.getEmail();  //현재 stomp client연결을 시도한 회원의 이메일
+    private List<String> getListOfConnectedMembers(){
         List<String> listOfConnectedMembers = new ArrayList<>();
         Iterator<String> mapIter = sessionList.keySet().iterator();
 
@@ -48,11 +45,23 @@ public class StompChatController {
             listOfConnectedMembers.add(connectedMemberEmail);
         }
 
+        System.out.println();
         for (int i=0; i<listOfConnectedMembers.size(); i++){
             System.out.println("email = " + listOfConnectedMembers.get(i));   //접속한 회원 이메일 로그
         }
+        System.out.println();
 
-        simpMessagingTemplate.convertAndSend("/sub/chat/department/" + chatContent.getDepartmentId(), listOfConnectedMembers);
+        return listOfConnectedMembers;
+    }
+
+    //client가 send 경로(setApplicationDestinationPrefixes)
+    //"/pub/chat/enter" : 회원 입장 -> "/sub/chat/department/{departmentId}"로 채팅방에 참여한 회원 이메일 전송
+    @MessageMapping(value = "/chat/enter")
+    public void enter(ChatContent chatContent){
+        email = chatContent.getEmail();  //현재 stomp client연결을 시도한 회원의 이메일
+        departmentId = chatContent.getDepartmentId(); //client연결이 시도된 부서의 아이디
+
+        simpMessagingTemplate.convertAndSend("/sub/chat/department/" + departmentId, getListOfConnectedMembers());
     }
 
     //부서에 초대한 회원의 명단
@@ -177,19 +186,20 @@ public class StompChatController {
         System.out.println("connect sessionId : " + sessionId);
         System.out.println(">>>>>>>>>>>>>>>>>");
 
-        printSessionList();
-        //sessions.put(sessionId, Integer.valueOf(userId));
+        printSessionList();  //현재 연결된 회원 목록
     }
 
     void printSessionList(){
         Iterator<String> mapIter = sessionList.keySet().iterator();
 
+        System.out.println();
         while(mapIter.hasNext()){
             String key = mapIter.next();
             String value = sessionList.get( key );
 
             System.out.println(key+" : "+value);
         }
+        System.out.println();
     }
 
     //stomp연결이 끊겼을 경우
@@ -203,6 +213,7 @@ public class StompChatController {
         System.out.println(">>>>>>>>>>>>>>>>>");
 
         sessionList.remove(sessionId);
+        simpMessagingTemplate.convertAndSend("/sub/chat/department/" + departmentId, getListOfConnectedMembers());
     }
 
     @GetMapping("/workspace/{workspaceId}/chat/count")
