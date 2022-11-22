@@ -30,8 +30,6 @@ public class StompChatController {
     private final ChatContentRepository chatContentRepository;
     private final DepartmentServiceImpl departmentService;
     private final MemberServiceImpl memberService;
-
-    private final BucketServiceImpl bucketService;
     private final SimpMessagingTemplate simpMessagingTemplate;  //특정 브로커로 메세지 전달
     private Map<String, String> sessionList = new HashMap<String, String>();
     private String email;
@@ -207,6 +205,20 @@ public class StompChatController {
         sessionList.remove(sessionId);
     }
 
+    @GetMapping("/workspace/{workspaceId}/chat/count")
+    public ResponseEntity<List> getNumberOfMessage(@PathVariable String workspaceId){
+        List<Department> departmentList = departmentService.getDepartmentListByWorkspace(workspaceId);  //워크스페이스의 부서 목록
+        List<NumberOfMessage> numberOfMessageList = new ArrayList<>();
+        String departmentId, messageCount;
 
+        for(int index = 0; index < departmentList.size(); index++){
+            departmentId = departmentList.get(index).getDepartmentId();
+            messageCount = chatContentRepository.getMessageCount(departmentId);
+
+            numberOfMessageList.add(new NumberOfMessage(departmentId, messageCount));  //해당 부서의 총 채팅 메세지 수
+        }
+
+        return new ResponseEntity<List>(numberOfMessageList, HttpStatus.OK);
+    }
 
 }
