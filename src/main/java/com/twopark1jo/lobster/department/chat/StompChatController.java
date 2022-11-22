@@ -61,14 +61,8 @@ public class StompChatController {
         String key;
 
         if(sessionList.containsValue(email)){  //사용자가 새로고침을 하는 경우 기존 세션 저장값 삭제
-            System.out.println("사용자의 새로고침");
             key = findKeyByValue(email);
             sessionList.remove(key);
-            System.out.println(">>>>>>>>>>>>>>>>>");
-            System.out.println("사용자의 새로고침 email : " + email);
-            printSessionList();
-            System.out.println();
-            System.out.println(">>>>>>>>>>>>>>>>>\n");
         }
 
         sessionList.put(sessionId, email);     //stomp연결을 시도한 회원의 세션아이디 저장
@@ -169,7 +163,7 @@ public class StompChatController {
         content = Normalizer.normalize(chatContent.getContent(), Normalizer.Form.NFC);  //윈도우, 맥 자소분리 합치기
         chatContent.setContent(content);
 
-        chatContentRepository.save(chatContent);  //채팅내용 저장
+        //chatContentRepository.save(chatContent);  //채팅내용 저장
 
         simpMessagingTemplate.convertAndSend("/sub/chat/department/" + chatContent.getDepartmentId(), chatContent);
     }
@@ -233,6 +227,8 @@ public class StompChatController {
     @EventListener(SessionDisconnectEvent.class)
     public void onDisconnect(SessionDisconnectEvent event){
         String sessionId = event.getMessage().getHeaders().get("simpSessionId").toString();
+
+        sessionList.remove(sessionId);
 
         System.out.println(">>>>>>>>>>>>>>>>>");
         System.out.println("stompCommand : " + event.getMessage().getHeaders().get("stompCommand"));
