@@ -15,6 +15,8 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.socket.messaging.SessionConnectEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
+import org.springframework.web.socket.messaging.SessionSubscribeEvent;
+import org.springframework.web.socket.messaging.SessionUnsubscribeEvent;
 
 import java.text.Normalizer;
 import java.time.LocalDateTime;
@@ -56,9 +58,6 @@ public class StompChatController {
         String email = chatContent.getEmail();        //현재 stomp client연결을 시도한 회원의 이메일
         departmentId = chatContent.getDepartmentId(); //client연결이 시도된 부서의 아이디
 
-        System.out.println("email = " + email);
-        System.out.println(">>>>>>>>>>>>>>>>>");
-
         String key;
 
         if(sessionList.containsValue(email)){  //사용자가 새로고침을 하는 경우 기존 세션 저장값 삭제
@@ -68,7 +67,10 @@ public class StompChatController {
 
         sessionList.put(sessionId, email);    //stomp연결을 시도한 회원의 세션아이디 저장
 
+        System.out.println("email = " + email);
+        System.out.println();
         printSessionList();  //현재 연결된 회원 목록
+        System.out.println(">>>>>>>>>>>>>>>>>");
 
         simpMessagingTemplate.convertAndSend("/sub/chat/department/" + departmentId, getListOfConnectedMembers());
     }
@@ -193,16 +195,6 @@ public class StompChatController {
         return null;
     }
 
-    //stomp가 연결되었을 경우
-    @EventListener(SessionConnectEvent.class)
-    public void onConnect(SessionConnectEvent event){
-        sessionId = event.getMessage().getHeaders().get("simpSessionId").toString();
-
-        System.out.println(">>>>>>>>>>>>>>>>>");
-        System.out.println("stompCommand : " + event.getMessage().getHeaders().get("stompCommand"));
-        System.out.println("connect sessionId : " + sessionId);
-    }
-
     void printSessionList(){
         Iterator<String> mapIter = sessionList.keySet().iterator();
 
@@ -216,6 +208,16 @@ public class StompChatController {
         System.out.println();
     }
 
+    //stomp가 연결되었을 경우
+    @EventListener(SessionConnectEvent.class)
+    public void onConnect(SessionConnectEvent event){
+        sessionId = event.getMessage().getHeaders().get("simpSessionId").toString();
+
+        System.out.println(">>>>>>>>>>>>>>>>>");
+        System.out.println("stompCommand : " + event.getMessage().getHeaders().get("stompCommand"));
+        System.out.println("connect sessionId : " + sessionId);
+    }
+
     //stomp연결이 끊겼을 경우
     @EventListener(SessionDisconnectEvent.class)
     public void onDisconnect(SessionDisconnectEvent event){
@@ -224,9 +226,34 @@ public class StompChatController {
         System.out.println(">>>>>>>>>>>>>>>>>");
         System.out.println("stompCommand : " + event.getMessage().getHeaders().get("stompCommand"));
         System.out.println("disconnect sessionId : " + sessionId);
+        System.out.println();
+        printSessionList();
         System.out.println(">>>>>>>>>>>>>>>>>");
 
         simpMessagingTemplate.convertAndSend("/sub/chat/department/" + departmentId, getListOfConnectedMembers());
+    }
+
+    @EventListener(SessionSubscribeEvent.class)
+    public void onSubscribe(SessionSubscribeEvent event){
+        String sessionId = event.getMessage().getHeaders().get("simpSessionId").toString();
+
+        System.out.println(">>>>>>>>>>>>>>>>>");
+        System.out.println("stompCommand : " + event.getMessage().getHeaders().get("stompCommand"));
+        System.out.println("subscribe sessionId : " + sessionId);
+        System.out.println();
+        printSessionList();
+        System.out.println(">>>>>>>>>>>>>>>>>");
+    }
+
+    @EventListener(SessionUnsubscribeEvent.class)
+    public void onUnsubscribe(SessionUnsubscribeEvent event){
+        String sessionId = event.getMessage().getHeaders().get("simpSessionId").toString();
+        System.out.println(">>>>>>>>>>>>>>>>>");
+        System.out.println("stompCommand : " + event.getMessage().getHeaders().get("stompCommand"));
+        System.out.println("unsubscribe sessionId : " + sessionId);
+        System.out.println();
+        printSessionList();
+        System.out.println(">>>>>>>>>>>>>>>>>");
     }
 
     @GetMapping("/workspace/{workspaceId}/chat/count")
