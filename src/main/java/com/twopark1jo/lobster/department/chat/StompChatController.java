@@ -159,7 +159,7 @@ public class StompChatController {
         content = Normalizer.normalize(chatContent.getContent(), Normalizer.Form.NFC);  //윈도우, 맥 자소분리 합치기
         chatContent.setContent(content);
 
-        //chatContentRepository.save(chatContent);  //채팅내용 저장
+        chatContentRepository.save(chatContent);  //채팅내용 저장
 
         simpMessagingTemplate.convertAndSend("/sub/chat/department/" + chatContent.getDepartmentId(), chatContent);
     }
