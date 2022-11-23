@@ -4,7 +4,6 @@ import com.twopark1jo.lobster.department.department.member.DepartmentMember;
 import com.twopark1jo.lobster.exception.DepartmentException;
 import com.twopark1jo.lobster.exception.ErrorCode;
 import com.twopark1jo.lobster.exception.GlobalExceptionHandler;
-import com.twopark1jo.lobster.member.Member;
 import com.twopark1jo.lobster.member.MemberServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,15 +1,11 @@
 package com.twopark1jo.lobster.bucket;
 
-import com.twopark1jo.lobster.bucket.history.BucketHistory;
-import com.twopark1jo.lobster.bucket.history.BucketHistoryRepository;
+import com.twopark1jo.lobster.bucket.model.BucketDAO;
 import com.twopark1jo.lobster.department.department.DepartmentRepository;
+import com.twopark1jo.lobster.utility.Constants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -17,39 +13,54 @@ import java.util.List;
 public class BucketServiceImpl implements BucketService{
 
     final private BucketRepository bucketRepository;
-    final private BucketHistoryRepository bucketHistoryRepository;
-
-    private String getBucketId(){
-        LocalDateTime date = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDateTime().withNano(0);
-        DateTimeFormatter myPattern = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
-
-        return date.format(myPattern);
-    }
+    final private DepartmentRepository departmentRepository;
 
     //버킷 생성
     @Override
-    public void create(Bucket bucket) {
-        bucket.setBucketId(getBucketId());
-        bucketRepository.save(bucket);
+    public boolean create(BucketDAO bucketDAO) {
+        boolean isExistingDepartment = departmentRepository.existsById(bucketDAO.getDepartmentId());
+
+        if (isExistingDepartment) {
+            bucketRepository.save(bucketDAO);
+            return Constants.IS_DATA_SAVED_SUCCESSFULLY;
+        }
+
+        return !Constants.IS_DATA_SAVED_SUCCESSFULLY;
     }
 
-    //버킷 커밋 생성
+    //워크스페이스의 모든 부서의 가장 마지막 버킷내역
     @Override
-    public void addToBucketHistory(BucketHistory bucketHistory) {
-        bucketHistory.setBucketId(getBucketId());
-        bucketHistoryRepository.save(bucketHistory);
-    }
-
-    //모든 버킷 목록
-    @Override
-    public List<Bucket> getBucketList() {
-        return bucketRepository.findAll();
-    }
-
-    //버킷 커밋내역
-    @Override
-    public List<BucketHistory> getBucketHistoryByDepartment(String departmentId) {
+    public List<BucketDAO> getLastBucketHistoryByWorkspace(String workspaceId) {
+        //return bucketRepository.findAllBucketHistoryByWorkspace(workspaceId);
         return null;
     }
 
+    //부서의 모든 버킷 내역
+    @Override
+    public List<BucketDAO> getBucketHistoryByDepartment(String departmentId) {
+        return bucketRepository.findAllByDepartmentId(departmentId);
+    }
+
+    //부서의 가장 마지막 버킷 내역
+    @Override
+    public BucketDAO getLastBucketHistoryByDepartment(String departmentId) {
+        return bucketRepository.findLastBucketHistoryByDepatmentId(departmentId);
+    }
+
+
+    boolean isExistingDepartment(String departmentId){
+        if(bucketRepository.existsByDepartmentId(departmentId)){
+            return Constants.IS_EXISTING_DEPARTMENT;
+        }
+
+        return !Constants.IS_EXISTING_DEPARTMENT;
+    }
+
+    boolean isExistingWorkspace(String workspaceId){
+        if(bucketRepository.existsByWorkspaceId(workspaceId)){
+            return Constants.IS_EXISTING_WORKSPACE;
+        }
+
+        return !Constants.IS_EXISTING_WORKSPACE;
+    }
 }
