@@ -38,6 +38,7 @@ public class StompChatController {
     private ConnectedMember getListOfConnectedMembers(){
         List<String> listOfConnectedMembers = new ArrayList<>();
         Iterator<String> mapIter = sessionList.keySet().iterator();
+        ConnectedMember connectedMember = new ConnectedMember();
 
         while(mapIter.hasNext()){                 //현재 로그인한 회원의 세션목록
             String sessionId = mapIter.next();
@@ -45,7 +46,9 @@ public class StompChatController {
             listOfConnectedMembers.add(connectedMemberEmail);
         }
 
-        return new ConnectedMember(listOfConnectedMembers);
+        connectedMember.setListOfConnectedMembers(listOfConnectedMembers);
+
+        return connectedMember;
     }
 
     //client가 send 경로(setApplicationDestinationPrefixes)
