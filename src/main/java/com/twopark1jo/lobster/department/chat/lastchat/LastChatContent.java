@@ -1,6 +1,6 @@
-package com.twopark1jo.lobster.department.chat;
+package com.twopark1jo.lobster.department.chat.lastchat;
 
-import com.twopark1jo.lobster.workspace.member.WorkspaceMemberPK;
+import com.twopark1jo.lobster.department.chat.lastchat.LastChatContentPK;
 import lombok.*;
 
 import javax.persistence.*;

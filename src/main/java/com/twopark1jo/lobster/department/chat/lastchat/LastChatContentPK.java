@@ -1,4 +1,4 @@
-package com.twopark1jo.lobster.department.chat;
+package com.twopark1jo.lobster.department.chat.lastchat;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

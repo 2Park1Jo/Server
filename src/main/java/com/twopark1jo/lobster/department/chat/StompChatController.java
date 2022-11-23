@@ -56,7 +56,7 @@ public class StompChatController {
     @MessageMapping(value = "/chat/enter")
     public void enter(ChatContent chatContent){
         String email = chatContent.getEmail();        //현재 stomp client연결을 시도한 회원의 이메일
-        departmentId = chatContent.getDepartmentId(); //client연결이 시도된 부서의 아이디
+//        departmentId = chatContent.getDepartmentId(); //client연결이 시도된 부서의 아이디
 
         String key;
 
@@ -74,7 +74,8 @@ public class StompChatController {
         System.out.println();
         System.out.println(">>>>>>>>>>>>>>>>>\n");
 
-        simpMessagingTemplate.convertAndSend("/sub/chat/department/" + departmentId, getListOfConnectedMembers());
+//        simpMessagingTemplate.convertAndSend("/sub/chat/department/" + departmentId, getListOfConnectedMembers());
+        simpMessagingTemplate.convertAndSend("/sub/chat/session", getListOfConnectedMembers());
     }
 
     //부서에 초대한 회원의 명단
@@ -238,7 +239,8 @@ public class StompChatController {
         System.out.println();
         System.out.println(">>>>>>>>>>>>>>>>>\n");*/
 
-        simpMessagingTemplate.convertAndSend("/sub/chat/department/" + departmentId, getListOfConnectedMembers());
+//        simpMessagingTemplate.convertAndSend("/sub/chat/department/" + departmentId, getListOfConnectedMembers());
+        simpMessagingTemplate.convertAndSend("/sub/chat/session", getListOfConnectedMembers());
     }
 
     @GetMapping("/workspace/{workspaceId}/chat/count")
