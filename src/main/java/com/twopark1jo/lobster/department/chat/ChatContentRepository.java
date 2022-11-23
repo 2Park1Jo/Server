@@ -1,6 +1,6 @@
 package com.twopark1jo.lobster.department.chat;
 
-import com.twopark1jo.lobster.department.department.Department;
+import com.twopark1jo.lobster.department.chat.model.ChatContent;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

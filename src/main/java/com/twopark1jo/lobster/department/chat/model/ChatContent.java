@@ -1,4 +1,4 @@
-package com.twopark1jo.lobster.department.chat;
+package com.twopark1jo.lobster.department.chat.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;

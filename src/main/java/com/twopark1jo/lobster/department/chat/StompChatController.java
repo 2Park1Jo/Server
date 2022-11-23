@@ -1,6 +1,9 @@
 package com.twopark1jo.lobster.department.chat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.twopark1jo.lobster.department.chat.model.ChatContent;
+import com.twopark1jo.lobster.department.chat.model.ConnectedMember;
+import com.twopark1jo.lobster.department.chat.model.NumberOfMessage;
 import com.twopark1jo.lobster.department.department.*;
 import com.twopark1jo.lobster.department.department.member.DepartmentMember;
 import com.twopark1jo.lobster.member.MemberServiceImpl;

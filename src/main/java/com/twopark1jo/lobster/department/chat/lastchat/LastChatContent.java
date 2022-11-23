@@ -24,6 +24,9 @@ public class LastChatContent {
     @Column(name = "department_id")
     private String departmentId;  //부서아이디(채팅방 아이디)
 
+    @Column(name = "workspace_id")
+    private String workspaceId;   //워크스페이스 아이디
+
     @Column(name = "last_chat_id")
     private String lastChatId;    //마지막 채팅 아이디
 
