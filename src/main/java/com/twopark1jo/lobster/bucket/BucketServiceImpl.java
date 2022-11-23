@@ -14,9 +14,9 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class BucketServiceImpl {//implements BucketService{
+public class BucketServiceImpl implements BucketService{
 
-    /*final private BucketRepository bucketRepository;
+    final private BucketRepository bucketRepository;
     final private BucketHistoryRepository bucketHistoryRepository;
 
     private String getBucketId(){
@@ -49,7 +49,7 @@ public class BucketServiceImpl {//implements BucketService{
     //버킷 커밋내역
     @Override
     public List<BucketHistory> getBucketHistoryByDepartment(String departmentId) {
-        return bucketHistoryRepository.findAllByDepartmentId(departmentId);
-    }*/
+        return null;
+    }
 
 }

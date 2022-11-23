@@ -1,7 +1,6 @@
 package com.twopark1jo.lobster.department.chat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.twopark1jo.lobster.bucket.BucketServiceImpl;
 import com.twopark1jo.lobster.department.department.*;
 import com.twopark1jo.lobster.department.department.member.DepartmentMember;
 import com.twopark1jo.lobster.member.MemberServiceImpl;
@@ -15,8 +14,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.socket.messaging.SessionConnectEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
-import org.springframework.web.socket.messaging.SessionSubscribeEvent;
-import org.springframework.web.socket.messaging.SessionUnsubscribeEvent;
 
 import java.text.Normalizer;
 import java.time.LocalDateTime;
@@ -36,9 +33,9 @@ public class StompChatController {
     private Map<String, Map> sessionListByWorkspace = new HashMap<String, Map>();  //워크스페이스별 세션목록
     private Map<String, String> sessionList = new HashMap<String, String>();       //부서별 세션목록
     private String sessionId;
-    private String departmentId;
+//    private String departmentId;
 
-    private List<String> getListOfConnectedMembers(){
+    private ConnectedMember getListOfConnectedMembers(){
         List<String> listOfConnectedMembers = new ArrayList<>();
         Iterator<String> mapIter = sessionList.keySet().iterator();
 
@@ -48,7 +45,7 @@ public class StompChatController {
             listOfConnectedMembers.add(connectedMemberEmail);
         }
 
-        return listOfConnectedMembers;
+        return new ConnectedMember(listOfConnectedMembers);
     }
 
     //client가 send 경로(setApplicationDestinationPrefixes)

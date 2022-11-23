@@ -29,7 +29,7 @@ public class MemberController {
         Member member = memberService.getMemberProfile(email);
 
         if(member == null){
-            return ResponseEntity.notFound().build();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         return new ResponseEntity<>(member, HttpStatus.OK);
