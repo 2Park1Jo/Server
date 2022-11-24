@@ -125,12 +125,11 @@ public class WorkspaceController {
             departmentMemberRepository.save(departmentMember);  //생성된 공지방에 회원정보 추가
 
             listOfInvitedMemberNames.append(departmentMember.getMemberName());   //공지방에 초대받은 회원 이름 목록
-            if(index - 1 < workspaceMemberList.size()){
+            if(index < workspaceMemberList.size() - 1){
                 listOfInvitedMemberNames.append(", ");
             }
         }
 
-        listOfInvitedMemberNames.append("님이 채팅방에 참여하였습니다.");
         saveMemberEntryMesaage(departmentId, listOfInvitedMemberNames.toString());  //DB에 공지방에 초대받은 회원의 입장 메세지 저장
 
         return new ResponseEntity(HttpStatus.CREATED);
