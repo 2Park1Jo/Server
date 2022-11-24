@@ -1,13 +1,10 @@
 package com.twopark1jo.lobster.bucket;
 
-import com.twopark1jo.lobster.bucket.model.BucketDAO;
-import com.twopark1jo.lobster.bucket.model.BucketDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -18,8 +15,8 @@ public class BucketController{
 
     //버킷 커밋 생성
     @PostMapping("/workspace/department/bucket/create")
-    public ResponseEntity create(@RequestBody BucketDAO bucketDAO) {
-        if(bucketService.create(bucketDAO)){
+    public ResponseEntity create(@RequestBody Bucket bucket) {
+        if(bucketService.create(bucket)){
             return new ResponseEntity(HttpStatus.CREATED);
         }
 
@@ -28,8 +25,8 @@ public class BucketController{
 
     //워크스페이스의 모든 부서의 가장 마지막 버킷 내역
     @GetMapping("/workspace/{workspaceId}/departments/last-bucket-history")
-    public ResponseEntity<List<BucketDAO>> getLastBucketHistoryByWorkspace(@PathVariable String workspaceId) {
-        List<BucketDAO> bucketHistoryList = bucketService.getLastBucketHistoryByWorkspace(workspaceId);
+    public ResponseEntity<List<Bucket>> getLastBucketHistoryByWorkspace(@PathVariable String workspaceId) {
+        List<Bucket> bucketHistoryList = bucketService.getLastBucketHistoryByWorkspace(workspaceId);
 
         if(bucketService.isExistingWorkspace(workspaceId)){
             return new ResponseEntity<>(bucketHistoryList, HttpStatus.OK);
@@ -40,11 +37,11 @@ public class BucketController{
 
     //부서의 모든 버킷 내역
     @GetMapping("/workspace/department/{departmentId}/bucket-history")
-    public ResponseEntity<List<BucketDAO>> getBucketHistoryByDepartment(@PathVariable String departmentId) {
-        List<BucketDAO> bucketDAOHistoryList = bucketService.getBucketHistoryByDepartment(departmentId);
+    public ResponseEntity<List<Bucket>> getBucketHistoryByDepartment(@PathVariable String departmentId) {
+        List<Bucket> bucketHistoryList = bucketService.getBucketHistoryByDepartment(departmentId);
 
         if(bucketService.isExistingDepartment(departmentId)){
-            return new ResponseEntity<>(bucketDAOHistoryList, HttpStatus.OK);
+            return new ResponseEntity<>(bucketHistoryList, HttpStatus.OK);
         }
 
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -52,7 +49,7 @@ public class BucketController{
 
     //부서의 가장 마지막 버킷 내역
     @GetMapping("/workspace/department/{departmentId}/last-bucket-history")
-    public BucketDAO getLastBucketHistoryByDepartment(@PathVariable String departmentId) {
+    public Bucket getLastBucketHistoryByDepartment(@PathVariable String departmentId) {
         return bucketService.getLastBucketHistoryByDepartment(departmentId);
     }
 }

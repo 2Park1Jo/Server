@@ -8,6 +8,7 @@ import com.twopark1jo.lobster.utility.Constants;
 import com.twopark1jo.lobster.workspace.member.WorkspaceMember;
 import com.twopark1jo.lobster.workspace.member.WorkspaceMemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ public class MemberServiceImpl implements MemberService{
     final private DepartmentRepository departmentRepository;
     final private DepartmentMemberRepository departmentMemberRepository;
     final private WorkspaceMemberRepository workspaceMemberRepository;
+    private final SimpMessagingTemplate simpMessagingTemplate;  //특정 브로커로 메세지 전달
 
     @Override
     public boolean signUp(Member member) {
@@ -131,17 +133,13 @@ public class MemberServiceImpl implements MemberService{
 
         department =departmentRepository.findByWorkspaceIdAndDepartmentName(workspaceId, "📢 공지방");
 
-        System.out.println("department = " + department.toString());
-
         for(int index = 0; index < workspaceMemberList.size(); index++){  //공지방에 추가할 회원 목록
             workspaceMember = workspaceMemberList.get(index);
-            System.out.println("workspaceMember = " + workspaceMember.toString());
 
             departmentMember = new DepartmentMember(department.getDepartmentId(), workspaceMember.getEmail(),
                     workspaceMember.getMemberName(), null, null);
-            System.out.println("departmentMember = " + departmentMember.toString());
+
             departmentMemberList.add(departmentMember);
-            System.out.println("departmentMemberList = " + departmentMemberList.get(index).toString() + "\n");
         }
 
         addToDepartment(departmentMemberList);   //해당 워크스페이스 공지방DB에 워크스페이스 회원정보 추가

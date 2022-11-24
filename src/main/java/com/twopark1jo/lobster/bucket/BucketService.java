@@ -1,17 +1,15 @@
 package com.twopark1jo.lobster.bucket;
 
 
-import com.twopark1jo.lobster.bucket.model.BucketDAO;
-
 import java.util.List;
 
 public interface BucketService {
 
-    boolean create(BucketDAO bucketDAO);
+    boolean create(Bucket bucket);
 
-    List<BucketDAO> getLastBucketHistoryByWorkspace(String workspaceId);
+    List<Bucket> getLastBucketHistoryByWorkspace(String workspaceId);
 
-    List<BucketDAO> getBucketHistoryByDepartment(String departmentId);
+    List<Bucket> getBucketHistoryByDepartment(String departmentId);
 
-    BucketDAO getLastBucketHistoryByDepartment(String departmentId);
+    Bucket getLastBucketHistoryByDepartment(String departmentId);
 }

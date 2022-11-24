@@ -1,4 +1,4 @@
-package com.twopark1jo.lobster.bucket.model;
+package com.twopark1jo.lobster.bucket;
 
 import lombok.*;
 
@@ -11,7 +11,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @ToString
-public class BucketDAO {
+public class Bucket {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "commit_id")

@@ -1,5 +1,7 @@
 package com.twopark1jo.lobster.workspace;
 
+import com.twopark1jo.lobster.department.chat.ChatContentRepository;
+import com.twopark1jo.lobster.department.chat.model.ChatContent;
 import com.twopark1jo.lobster.department.department.Department;
 import com.twopark1jo.lobster.department.department.DepartmentController;
 import com.twopark1jo.lobster.department.department.DepartmentRepository;
@@ -31,6 +33,7 @@ public class WorkspaceController {
 
     private final WorkspaceRepository workspaceRepository;
     private final DepartmentServiceImpl departmentService;
+    private final ChatContentRepository chatContentRepository;
     @Autowired
     private DepartmentMemberRepository departmentMemberRepository;
     @Autowired
@@ -57,9 +60,32 @@ public class WorkspaceController {
 
     private String getLocalDateTime(){
         LocalDateTime date = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDateTime().withNano(0);
+        DateTimeFormatter myPattern = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        return date.format(myPattern);
+    }
+
+    private String getTableId(){
+        LocalDateTime date = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDateTime().withNano(0);
         DateTimeFormatter myPattern = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
         return date.format(myPattern) + date.getNano();
+    }
+
+    //워크스페이스 생성 후 공지방에 자동으로 초대받은 회원의 이름 목록
+    private void saveMemberEntryMesaage(String departmentId, String memberName){
+        ChatContent chatContent;
+
+        chatContent = ChatContent.builder()                      //채팅방 참여 메세지
+                .departmentId(departmentId)
+                .email(null)
+                .content(memberName + "님이 채팅방에 참여하였습니다.")
+                .date(getLocalDateTime())
+                .contentType("-1")
+                .link(null)
+                .build();
+
+        chatContentRepository.save(chatContent);
     }
 
     @PostMapping("workspace/create")
@@ -69,6 +95,7 @@ public class WorkspaceController {
         WorkspaceMember workspaceMember;
         DepartmentMember departmentMember;
         String departmentId;
+        StringBuilder listOfInvitedMemberNames = new StringBuilder();
 
         boolean isWorkspace = workspaceRepository.existsById(workspace.getWorkspaceId());
         String email = workspaceMemberList.get(0).getEmail();   //워크스페이스 생성자의 정보
@@ -77,10 +104,10 @@ public class WorkspaceController {
             return ResponseEntity.badRequest().build();
         }
 
-        workspace.setWorkspaceId(getLocalDateTime());
+        workspace.setWorkspaceId(getTableId());
         workspaceRepository.save(workspace);        //워크스페이스 생성
 
-        departmentId = getLocalDateTime();
+        departmentId = workspace.getWorkspaceId();          //공지방 아이디 = 워크스페이스 아이디
         Department department = new Department(departmentId, workspace.getWorkspaceId(),
                 "\uD83D\uDCE2 공지방", null, null);
 
@@ -96,7 +123,15 @@ public class WorkspaceController {
             departmentMember = new DepartmentMember(departmentId,
                     workspaceMember.getEmail(), workspaceMember.getMemberName(),null, null);
             departmentMemberRepository.save(departmentMember);  //생성된 공지방에 회원정보 추가
+
+            listOfInvitedMemberNames.append(departmentMember.getMemberName());   //공지방에 초대받은 회원 이름 목록
+            if(index - 1 < workspaceMemberList.size()){
+                listOfInvitedMemberNames.append(", ");
+            }
         }
+
+        listOfInvitedMemberNames.append("님이 채팅방에 참여하였습니다.");
+        saveMemberEntryMesaage(departmentId, listOfInvitedMemberNames.toString());  //DB에 공지방에 초대받은 회원의 입장 메세지 저장
 
         return new ResponseEntity(HttpStatus.CREATED);
     }

@@ -1,9 +1,7 @@
 package com.twopark1jo.lobster.workspace.member;
 
-import com.twopark1jo.lobster.member.Member;
 import com.twopark1jo.lobster.member.MemberServiceImpl;
 import com.twopark1jo.lobster.utility.Constants;
-import com.twopark1jo.lobster.workspace.Workspace;
 import com.twopark1jo.lobster.workspace.WorkspaceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -55,11 +53,7 @@ public class WorkspaceMemberController {
             member.setWorkspaceId(workspaceId);       //워크스페이스 회원정보에 워크스페이스 정보 저장
             member.setMemberName(memberService.getMemberName(member.getEmail())); //회원 이름 저장
             workspaceMemberRepository.save(member);   //워크스페이스 회원정보 저장
-
-            System.out.println("member = " + member.toString());
         }
-
-        System.out.println("===================================");
 
         memberService.addToNoticeBoard(workspaceMemberList);   //공지방에 회원 초대
 

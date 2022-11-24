@@ -33,10 +33,8 @@ public class StompChatController {
     private final DepartmentServiceImpl departmentService;
     private final MemberServiceImpl memberService;
     private final SimpMessagingTemplate simpMessagingTemplate;  //특정 브로커로 메세지 전달
-    private Map<String, Map> sessionListByWorkspace = new HashMap<String, Map>();  //워크스페이스별 세션목록
     private Map<String, String> sessionList = new HashMap<String, String>();       //부서별 세션목록
     private String sessionId;
-//    private String departmentId;
 
     private ConnectedMember getListOfConnectedMembers(){
         List<String> listOfConnectedMembers = new ArrayList<>();
@@ -59,7 +57,6 @@ public class StompChatController {
     @MessageMapping(value = "/chat/enter")
     public void enter(ChatContent chatContent){
         String email = chatContent.getEmail();        //현재 stomp client연결을 시도한 회원의 이메일
-//        departmentId = chatContent.getDepartmentId(); //client연결이 시도된 부서의 아이디
 
         String key;
 
@@ -77,7 +74,6 @@ public class StompChatController {
         System.out.println();
         System.out.println(">>>>>>>>>>>>>>>>>\n");
 
-//        simpMessagingTemplate.convertAndSend("/sub/chat/department/" + departmentId, getListOfConnectedMembers());
         simpMessagingTemplate.convertAndSend("/sub/chat/session", getListOfConnectedMembers());
     }
 
@@ -218,13 +214,6 @@ public class StompChatController {
     @EventListener(SessionConnectEvent.class)
     public void onConnect(SessionConnectEvent event){
         sessionId = event.getMessage().getHeaders().get("simpSessionId").toString();     //현재 연결을 시도한
-
-        /*System.out.println(">>>>>>>>>>>>>>>>>");
-        System.out.println("stompCommand : " + event.getMessage().getHeaders().get("stompCommand"));
-        System.out.println("connect sessionId : " + sessionId);System.out.println();
-        printSessionList();
-        System.out.println();
-        System.out.println(">>>>>>>>>>>>>>>>>\n");*/
     }
 
     //stomp연결이 끊겼을 경우
@@ -234,15 +223,6 @@ public class StompChatController {
 
         sessionList.remove(sessionId);
 
-        /*System.out.println(">>>>>>>>>>>>>>>>>");
-        System.out.println("stompCommand : " + event.getMessage().getHeaders().get("stompCommand"));
-        System.out.println("disconnect sessionId : " + sessionId);
-        System.out.println();
-        printSessionList();
-        System.out.println();
-        System.out.println(">>>>>>>>>>>>>>>>>\n");*/
-
-//        simpMessagingTemplate.convertAndSend("/sub/chat/department/" + departmentId, getListOfConnectedMembers());
         simpMessagingTemplate.convertAndSend("/sub/chat/session", getListOfConnectedMembers());
     }
 
