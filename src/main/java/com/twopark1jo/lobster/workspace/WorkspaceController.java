@@ -58,7 +58,7 @@ public class WorkspaceController {
         return new ResponseEntity<>(workspaceList, HttpStatus.OK);
     }
 
-    private String getLocalDateTime(){
+    private String getLocalDateTime(String format){
         LocalDateTime date = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDateTime().withNano(0);
         DateTimeFormatter myPattern = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -80,7 +80,7 @@ public class WorkspaceController {
                 .departmentId(departmentId)
                 .email(null)
                 .content(memberName + "님이 채팅방에 참여하였습니다.")
-                .date(getLocalDateTime())
+                .date(getLocalDateTime("yyyy-MM-dd HH:mm:ss"))
                 .contentType("-1")
                 .link(null)
                 .build();
@@ -90,21 +90,22 @@ public class WorkspaceController {
 
     @PostMapping("workspace/create")
     public ResponseEntity create(@RequestBody WorkspaceCreation workspaceCreation){
-        Workspace workspace = workspaceCreation.getWorkspace();   //생성할 워크스페이스 정보
         List<WorkspaceMember> workspaceMemberList = workspaceCreation.getWorkspaceMemberList();  //추가할 회원 목록
         WorkspaceMember workspaceMember;
         DepartmentMember departmentMember;
         String departmentId;
         StringBuilder listOfInvitedMemberNames = new StringBuilder();
+        Workspace workspace = workspaceCreation.getWorkspace();   //생성할 워크스페이스 정보
 
         boolean isWorkspace = workspaceRepository.existsById(workspace.getWorkspaceId());
-        String email = workspaceMemberList.get(0).getEmail();   //워크스페이스 생성자의 정보
+        String email = workspaceMemberList.get(0).getEmail();    //워크스페이스 생성자의 정보
 
         if(isWorkspace){
             return ResponseEntity.badRequest().build();
         }
 
         workspace.setWorkspaceId(getTableId());
+        workspace.setCreationDate(getLocalDateTime("yyyy-MM-dd"));//워크스페이스 생성 시간
         workspaceRepository.save(workspace);        //워크스페이스 생성
 
         departmentId = workspace.getWorkspaceId();          //공지방 아이디 = 워크스페이스 아이디

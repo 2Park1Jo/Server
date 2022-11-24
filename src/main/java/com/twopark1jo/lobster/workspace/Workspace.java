@@ -27,4 +27,7 @@ public class Workspace {
 
     @Column(name = "workspace_deadline")
     private String workspaceDeadline;
+
+    @Column(name = "creation_date")
+    private String creationDate;
 }
