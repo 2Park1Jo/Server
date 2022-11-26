@@ -54,5 +54,5 @@ public class Bucket {
     private String fileLink5;
 
     @Column(name = "bucket_progress")
-    private String bucketPreogress;
+    private String bucketProgress;
 }
