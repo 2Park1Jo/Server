@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.twopark1jo.lobster.department.chat.model.ChatContent;
 import com.twopark1jo.lobster.department.chat.model.ConnectedMember;
 import com.twopark1jo.lobster.department.chat.model.NumberOfMessage;
+import com.twopark1jo.lobster.department.chat.model.TopThreeChats;
 import com.twopark1jo.lobster.department.department.*;
 import com.twopark1jo.lobster.department.department.member.DepartmentMember;
 import com.twopark1jo.lobster.member.MemberServiceImpl;
@@ -14,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.socket.messaging.SessionConnectEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
@@ -242,4 +245,55 @@ public class StompChatController {
         return new ResponseEntity<List>(numberOfMessageList, HttpStatus.OK);
     }
 
+    //워크스페이스의 회원이메일, 부서명을 매칭한 맵 데이터
+    private MultiValueMap<String ,String> getDepartmentNameListByWorkspace(String workspaceId){
+        MultiValueMap<String ,String> departmentNameMap = new LinkedMultiValueMap<>();
+        List<String> departmentNameListFromDB =
+                chatContentRepository.getDepartmentNameListByWorkspace(workspaceId);
+        int size = departmentNameListFromDB.size();
+        String departmentName[];
+
+        for (int index=0; index<size; index++){
+            departmentName = departmentNameListFromDB.get(index).split(",");
+            departmentNameMap.add(departmentName[0], departmentName[1]);    //key : 이메일, value : 부서명
+        }
+
+        return departmentNameMap;
+    }
+
+    //워크스페이스에서 회원이 속한 부서명
+    private String getDepartmentNameListByMember(MultiValueMap<String ,String> departmentNameMap, String email){
+        List<String> departmentNameList = departmentNameMap.get(email);
+        StringBuilder departmentName = new StringBuilder();
+        int size = departmentNameList.size();
+
+        for (int index=0; index< size; index++){
+            departmentName.append(departmentNameList.get(index));
+            if(index < size - 1) {
+                departmentName.append(", ");
+            }
+        }
+
+        return departmentName.toString();
+    }
+
+    //채팅 수가 가장 많은 상위 3명의 회원 목록
+    @GetMapping("/workspace/{workspaceId}/top-three-chats")
+    public List<TopThreeChats> getListOfThreeMostChattedPeople(@PathVariable String workspaceId){
+        List<String> listOfThreeMostChattedPeopleFromDb = chatContentRepository.getListOfThreeMostChattedPeople(workspaceId);
+        List<TopThreeChats> listOfThreeMostChattedMember = new ArrayList<>();
+        MultiValueMap<String ,String> departmentNameMap = getDepartmentNameListByWorkspace(workspaceId);
+        int size = listOfThreeMostChattedPeopleFromDb.size();
+        String topThreeChat[] , departmentNameList;
+
+        for(int index=0; index<size; index++){
+            //[0] : email, [1] : 회원이름, [2] : 채팅수
+            topThreeChat = listOfThreeMostChattedPeopleFromDb.get(index).split(",");
+            departmentNameList = getDepartmentNameListByMember(departmentNameMap, topThreeChat[0]);
+
+            listOfThreeMostChattedMember.add(new TopThreeChats(topThreeChat[1], departmentNameList, topThreeChat[2]));
+        }
+
+        return listOfThreeMostChattedMember;
+    }
 }
