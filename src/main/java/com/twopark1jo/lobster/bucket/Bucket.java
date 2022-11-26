@@ -53,6 +53,6 @@ public class Bucket {
     @Column(name = "file_link5")
     private String fileLink5;
 
-    @Column(name = "bucket_preogress")
+    @Column(name = "bucket_progress")
     private String bucketPreogress;
 }
