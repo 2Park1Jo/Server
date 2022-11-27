@@ -57,6 +57,30 @@ public class DepartmentServiceImpl implements DepartmentService{
     }
 
     @Override
+    public boolean update(Department department){
+        String workspaceId = department.getWorkspaceId();
+        String departementId = department.getDepartmentId();
+        String departmentName = department.getDepartmentName();
+
+        //부서명을 바꾸지 않은 경우 부서명 외의 변경사항 저장
+        if(departmentName.equals(departmentRepository.findByDepartmentId(departementId).getDepartmentName())){
+            departmentRepository.save(department);
+            return Constants.IS_DATA_SAVED_SUCCESSFULLY;
+        }
+
+        String departmentNameToCompare =
+                departmentRepository.findDepartmentNameByWorkspaceId(workspaceId, departmentName);
+
+        //워크스페이스에 이미 존재하는 부서명으로 변경하려고 하는 경우
+        if(departmentName == null || departmentName.equals(departmentNameToCompare)){
+            return !Constants.IS_DATA_SAVED_SUCCESSFULLY;
+        }
+
+        departmentRepository.save(department);
+        return Constants.IS_DATA_SAVED_SUCCESSFULLY;
+    }
+
+    @Override
     public List<Department> getDepartmentList() {
         return  departmentRepository.findAll();
     }

@@ -149,10 +149,11 @@ public class StompChatController {
     }
 
     @MessageMapping(value = "/chat/department/update")
+    @PostMapping("/test")
     public ResponseEntity updateDepartment(@RequestBody Department department){
         ChatContent chatContent;
 
-        chatContent = ChatContent.builder()                      //채팅방 참여 메세지
+        chatContent = ChatContent.builder()                      //부서 정보 변경 메세지
                 .departmentId(department.getDepartmentId())
                 .email(null)
                 .content("부서정보가 변경되었습니다.")
@@ -161,14 +162,16 @@ public class StompChatController {
                 .link(null)
                 .build();
 
-        if(departmentService.create(department)   //부서명이 중복되는 경우 부서정보를 수정하지 않고 끝냄
+        if(departmentService.update(department)      //부서명이 중복되는 경우 부서정보를 수정하지 않고 끝냄
                 == !Constants.IS_DATA_SAVED_SUCCESSFULLY){
-            simpMessagingTemplate.convertAndSend(     //부서 생성 메세지 전송
-                    "/sub/chat/workspace/" + department.getWorkspaceId(), HttpStatus.BAD_REQUEST);
+            simpMessagingTemplate.convertAndSend(
+                    "/sub/chat/workspace/" + department.getWorkspaceId(), "이미 존재하는 부서명입니다.");
             return ResponseEntity.badRequest().build();
         }
 
-        simpMessagingTemplate.convertAndSend(     //부서 생성 메세지 전송
+        chatContentRepository.save(chatContent);  //부서 수정 메세지 저장
+
+        simpMessagingTemplate.convertAndSend(     //부서 수정 메세지 전송
                 "/sub/chat/workspace/" + department.getWorkspaceId(), chatContent);
 
         return new ResponseEntity(HttpStatus.CREATED);

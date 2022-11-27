@@ -9,6 +9,8 @@ public interface DepartmentService {
 
     boolean create(Department department);
 
+    boolean update(Department department);
+
     void addDepartmentMember(DepartmentMember member);
 
     List<Department> getDepartmentList();

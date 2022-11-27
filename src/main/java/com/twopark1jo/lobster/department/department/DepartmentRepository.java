@@ -20,4 +20,10 @@ public interface DepartmentRepository extends JpaRepository<Department, String> 
     boolean existsByWorkspaceIdAndDepartmentName(String workspaceId, String departmentName);
 
     Department findByWorkspaceIdAndDepartmentName(String workspaceId, String departmentName);
+
+    @Query(value = "SELECT department_name FROM department " +
+            "WHERE workspace_id=:workspace_id AND department_name=:department_name", nativeQuery = true)
+    String findDepartmentNameByWorkspaceId(@Param("workspace_id")String workspaceId, @Param("department_name")String departmentName);
+
+    Department findByDepartmentId(String departementId);
 }
