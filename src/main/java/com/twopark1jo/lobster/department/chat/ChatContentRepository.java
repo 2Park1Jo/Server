@@ -17,7 +17,7 @@ public interface ChatContentRepository extends JpaRepository<ChatContent, String
     @Query(value =
             "SELECT chat_content.email, member_name, COUNT(chat_id) " +
             "FROM chat_content JOIN department_member " +
-            "ON chat_content.email=department_member.email " +
+            "ON chat_content.email=department_member.email AND chat_content.department_id=department_member.department_id " +
             "WHERE chat_content.department_id " +
             "IN(SELECT department_id FROM department WHERE workspace_id=:workspace_id) " +
             "GROUP BY email ORDER BY COUNT(chat_id) DESC LIMIT 3"
