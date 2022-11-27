@@ -70,13 +70,6 @@ public class StompChatController {
 
         sessionList.put(sessionId, email);     //stomp연결을 시도한 회원의 세션아이디 저장
 
-        System.out.println(">>>>>>>>>>>>>>>>>");
-        System.out.println("email : " + email);
-        System.out.println("connect sessionId : " + sessionId);System.out.println();
-        printSessionList();
-        System.out.println();
-        System.out.println(">>>>>>>>>>>>>>>>>\n");
-
         simpMessagingTemplate.convertAndSend("/sub/chat/session", getListOfConnectedMembers());
     }
 
@@ -104,7 +97,7 @@ public class StompChatController {
     }
 
     //"/pub/chat/invitation" : 기존 부서에 회원 추가
-    @MessageMapping(value = "/chat/invitation")
+    @MessageMapping(value = "/chat/department/invitation")
     public ResponseEntity inviteToDepartment(List<DepartmentMember> departmentMemberList){
         String departmentId = departmentMemberList.get(0).getDepartmentId();
         ChatContent chatContent;
@@ -126,7 +119,7 @@ public class StompChatController {
         System.out.println("chatContent = " + chatContent.toString());
         chatContentRepository.save(chatContent);
         simpMessagingTemplate.convertAndSend(
-                "/sub/chat/department/" + departmentId, chatContent);
+                "/sub/chat/workspace", chatContent);
 
         return ResponseEntity.ok().build();
     }
@@ -171,7 +164,7 @@ public class StompChatController {
         simpMessagingTemplate.convertAndSend("/sub/chat/department/" + chatContent.getDepartmentId(), chatContent);
     }
 
-    //"/pub/workspace/invitation" : 회원 추가 알림
+    //"/pub/chat/workspace/invitation" : 회원 추가 알림
     @MessageMapping(value = "/chat/workspace/invitation")
     public void announceAdditionOfWorkspaceMembers(String chatcontent){
 
