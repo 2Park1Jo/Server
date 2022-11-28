@@ -199,6 +199,13 @@ public class StompChatController {
         simpMessagingTemplate.convertAndSend("/sub/chat/workspace", chatcontent);
     }
 
+    //"/pub/chat/department/bucket-update" : 버킷 최신화 알림
+    @MessageMapping(value = "/chat/department/bucket-update")
+    public void announceBucketUpdate(String departmentId){
+
+        simpMessagingTemplate.convertAndSend("/sub/chat/department/" + departmentId, "bucket update");
+    }
+
     //부서별 채팅 데이터
     @GetMapping("department/{departmentId}/chat/content")
     public ResponseEntity<List<ChatContent>> getDepartmentChatContent(@PathVariable("departmentId") String departmentId){
