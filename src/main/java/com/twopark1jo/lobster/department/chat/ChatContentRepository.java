@@ -11,6 +11,16 @@ import java.util.List;
 public interface ChatContentRepository extends JpaRepository<ChatContent, String> {
     public List<ChatContent> findAllByDepartmentId(String departmentId);
 
+    @Query(value =
+            "SELECT department_id, COUNT(chat_id) " +
+            "FROM chat_content WHERE chat_content.department_id IN" +
+            "(SELECT department.department_id FROM department LEFT JOIN department_member " +
+            "ON department.department_id=department_member.department_id " +
+            "WHERE department.workspace_id=:workspace_id AND email=:email) " +
+            "GROUP BY department_id", nativeQuery = true)
+    public List<String> findDepartmentIdAndChatCountByWorkspace(
+            @Param("workspace_id") String workspaceId, @Param("email") String email);
+
     @Query(value = "SELECT COUNT(chat_id) FROM chat_content where department_id=:department_id", nativeQuery = true)
     public String getMessageCount(@Param("department_id") String departmentId);
 

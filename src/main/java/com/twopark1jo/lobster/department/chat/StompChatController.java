@@ -1,10 +1,7 @@
 package com.twopark1jo.lobster.department.chat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.twopark1jo.lobster.department.chat.model.ChatContent;
-import com.twopark1jo.lobster.department.chat.model.ConnectedMember;
-import com.twopark1jo.lobster.department.chat.model.NumberOfMessage;
-import com.twopark1jo.lobster.department.chat.model.TopThreeChats;
+import com.twopark1jo.lobster.department.chat.model.*;
 import com.twopark1jo.lobster.department.department.*;
 import com.twopark1jo.lobster.department.department.member.DepartmentMember;
 import com.twopark1jo.lobster.member.MemberServiceImpl;
@@ -199,13 +196,6 @@ public class StompChatController {
         simpMessagingTemplate.convertAndSend("/sub/chat/workspace", chatcontent);
     }
 
-    //"/pub/chat/department/bucket-update" : 버킷 최신화 알림
-    @MessageMapping(value = "/chat/department/bucket-update")
-    public void announceBucketUpdate(String departmentId){
-
-        simpMessagingTemplate.convertAndSend("/sub/chat/department/" + departmentId, "bucket update");
-    }
-
     //부서별 채팅 데이터
     @GetMapping("department/{departmentId}/chat/content")
     public ResponseEntity<List<ChatContent>> getDepartmentChatContent(@PathVariable("departmentId") String departmentId){
@@ -213,6 +203,34 @@ public class StompChatController {
 
         if(isDepartment){
             return new ResponseEntity<>(chatContentRepository.findAllByDepartmentId(departmentId), HttpStatus.OK);
+        }
+
+        return ResponseEntity.notFound().build();
+    }
+
+    private List<DepartmentChatCount> getdepartmentChatCountByMember(String workspaceId, String email){
+        List<String> departmentChatCountByMember = chatContentRepository.findDepartmentIdAndChatCountByWorkspace(workspaceId, email);
+        List<DepartmentChatCount> departmentChatCountList = new ArrayList<>();
+        String departmentChatCount[];
+        int size = departmentChatCountByMember.size();
+
+        for(int index=0; index<size; index++){
+            departmentChatCount = departmentChatCountByMember.get(index).split(",");
+            departmentChatCountList.add(new DepartmentChatCount(departmentChatCount[0], departmentChatCount[1]));
+        }
+
+        return departmentChatCountList;
+    }
+
+    @GetMapping("workspace/{workspaceId}/email/{email}/chat/content")
+    public ResponseEntity<List<DepartmentChatCount>> getDepartmentChatContent(
+            @PathVariable("workspaceId") String workspaceId, @PathVariable("email") String email){
+
+        boolean isMember = memberService.isExistingMember(email);
+
+        if(isMember){
+            return new ResponseEntity<>(getdepartmentChatCountByMember(workspaceId, email)
+                    , HttpStatus.OK);
         }
 
         return ResponseEntity.notFound().build();
