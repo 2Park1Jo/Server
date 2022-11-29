@@ -13,7 +13,7 @@ public class BucketByMember {
 
     private String email;
 
-    private String memnberName;
+    private String memberName;
 
     private String commitCount;
 }

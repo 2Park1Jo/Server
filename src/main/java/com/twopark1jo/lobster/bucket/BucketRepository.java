@@ -39,6 +39,6 @@ public interface BucketRepository extends JpaRepository<Bucket, String> {
     @Query(value =
             "SELECT department_id, (SELECT department_name FROM department WHERE bucket.department_id=department.department_id) " +
             "AS department_name, COUNT(*) FROM bucket WHERE workspace_id=:workspace_id " +
-            "GROUP BY department_id ORDER BY COUNT(*) DESC LIMIT 3", nativeQuery = true)
+            "GROUP BY department_id ORDER BY COUNT(*) DESC", nativeQuery = true)
     List<String> getTopThreeDepartmentWithMostBucketUpdate(@Param("workspace_id") String workspaceId);
 }
