@@ -276,19 +276,18 @@ public class StompChatController {
     }
 
     @GetMapping("/workspace/{workspaceId}/chat/count")
-    public ResponseEntity<List> getNumberOfMessage(@PathVariable String workspaceId){
-        List<Department> departmentList = departmentService.getDepartmentListByWorkspace(workspaceId);  //워크스페이스의 부서 목록
-        List<NumberOfMessage> numberOfMessageList = new ArrayList<>();
-        String departmentId, messageCount;
+    public ResponseEntity<List> getNumberOfChats(@PathVariable String workspaceId){
+        List<String> numberOfMessagePerDepartment = chatContentRepository.getNumberOfChatsPerDepartment(workspaceId);
+        List<NumberOfChats> numberOfChatsList = new ArrayList<>();
+        String departmentChatCount[];
+        int size = numberOfMessagePerDepartment.size();
 
-        for(int index = 0; index < departmentList.size(); index++){
-            departmentId = departmentList.get(index).getDepartmentId();
-            messageCount = chatContentRepository.getMessageCount(departmentId);
-
-            numberOfMessageList.add(new NumberOfMessage(departmentId, messageCount));  //해당 부서의 총 채팅 메세지 수
+        for(int index = 0; index < size; index++){
+            departmentChatCount = numberOfMessagePerDepartment.get(index).split(",");
+            numberOfChatsList.add(new NumberOfChats(departmentChatCount[0], departmentChatCount[1], departmentChatCount[2]));
         }
 
-        return new ResponseEntity<List>(numberOfMessageList, HttpStatus.OK);
+        return new ResponseEntity<List>(numberOfChatsList, HttpStatus.OK);
     }
 
     //워크스페이스의 회원이메일, 부서명을 매칭한 맵 데이터

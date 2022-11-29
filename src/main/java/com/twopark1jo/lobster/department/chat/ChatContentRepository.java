@@ -12,9 +12,7 @@ public interface ChatContentRepository extends JpaRepository<ChatContent, String
     public List<ChatContent> findAllByDepartmentId(String departmentId);
 
     @Query(value =
-            "SELECT department.department_id, department.department_name, COUNT(chat_id) " +
-            "FROM department LEFT JOIN chat_content " +
-            "ON department.department_id=chat_content.department_id" +
+            "SELECT department_id, COUNT(chat_id) " +
             "FROM chat_content WHERE chat_content.department_id IN" +
             "(SELECT department.department_id FROM department LEFT JOIN department_member " +
             "ON department.department_id=department_member.department_id " +
@@ -23,8 +21,16 @@ public interface ChatContentRepository extends JpaRepository<ChatContent, String
     public List<String> findDepartmentIdAndChatCountByWorkspace(
             @Param("workspace_id") String workspaceId, @Param("email") String email);
 
-    @Query(value = "SELECT COUNT(chat_id) FROM chat_content WHERE department_id=:department_id AND email IS NOT NULL", nativeQuery = true)
-    public String getMessageCount(@Param("department_id") String departmentId);
+    @Query(value =
+            "SELECT department.department_id, department.department_name, COUNT(chat_id) " +
+            "FROM department LEFT JOIN chat_content " +
+            "ON department.department_id=chat_content.department_id " +
+            "WHERE chat_content.email IS NOT NULL AND chat_content.department_id IN" +
+            "(SELECT department.department_id FROM department " +
+            "WHERE department.workspace_id=:workspace_id) " +
+            "GROUP BY department_id " +
+            "ORDER BY COUNT(chat_id) DESC", nativeQuery = true)
+    public List<String> getNumberOfChatsPerDepartment(@Param("workspace_id") String workspaceId);
 
     @Query(value =
             "SELECT chat_content.email, member_name, COUNT(chat_id) " +

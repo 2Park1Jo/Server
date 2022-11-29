@@ -7,9 +7,11 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class NumberOfMessage {
+public class NumberOfChats {
 
     String departmentId;
+
+    String departmentName;
 
     String messageCount;
 }
