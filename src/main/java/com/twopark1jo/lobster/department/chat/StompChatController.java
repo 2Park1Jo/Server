@@ -222,7 +222,7 @@ public class StompChatController {
         return departmentChatCountList;
     }
 
-    @GetMapping("workspace/{workspaceId}/email/{email}/chat/content")
+    @GetMapping("workspace/{workspaceId}/email/{email}/chat/count")
     public ResponseEntity<List<DepartmentChatCount>> getDepartmentChatContent(
             @PathVariable("workspaceId") String workspaceId, @PathVariable("email") String email){
 

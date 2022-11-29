@@ -12,7 +12,9 @@ public interface ChatContentRepository extends JpaRepository<ChatContent, String
     public List<ChatContent> findAllByDepartmentId(String departmentId);
 
     @Query(value =
-            "SELECT department_id, COUNT(chat_id) " +
+            "SELECT department.department_id, department.department_name, COUNT(chat_id) " +
+            "FROM department LEFT JOIN chat_content " +
+            "ON department.department_id=chat_content.department_id" +
             "FROM chat_content WHERE chat_content.department_id IN" +
             "(SELECT department.department_id FROM department LEFT JOIN department_member " +
             "ON department.department_id=department_member.department_id " +
