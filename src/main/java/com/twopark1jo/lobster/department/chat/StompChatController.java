@@ -123,14 +123,15 @@ public class StompChatController {
 
     //"/pub/department/creation" : 부서 생성 + 회원 추가
     @MessageMapping(value = "/chat/department/creation")
-    @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
-    public ResponseEntity createDepartment(@RequestBody DepartmentCreation departmentCreation){
+    public void createDepartment(@RequestBody DepartmentCreation departmentCreation){
         Department department = departmentCreation.getDepartment();    //생성할 부서 정보
         List<DepartmentMember> departmentMemberList = departmentCreation.getDepartmentMemberList();  //부서에 추가할 회원 목록
 
         if(departmentService.create(department)
                 == !Constants.IS_DATA_SAVED_SUCCESSFULLY){
-            return ResponseEntity.badRequest().build();
+            simpMessagingTemplate.convertAndSend(                //부서 생성 메세지 전송
+                    "/sub/chat/workspace/" + department.getWorkspaceId(), "이미 존재하는 부서입니다");
+            return;
         }
 
         for (int i=0; i<departmentMemberList.size(); i++){   //부서 회원 정보에 생성한 부서 아이디 저장
@@ -141,8 +142,6 @@ public class StompChatController {
 
         simpMessagingTemplate.convertAndSend(                //부서 생성 메세지 전송
                 "/sub/chat/workspace/" + department.getWorkspaceId(), department);
-
-        return new ResponseEntity(HttpStatus.CREATED);
     }
 
     @MessageMapping(value = "/chat/department/update")
@@ -162,7 +161,7 @@ public class StompChatController {
         if(departmentService.update(department)      //부서명이 중복되는 경우 부서정보를 수정하지 않고 끝냄
                 == !Constants.IS_DATA_SAVED_SUCCESSFULLY){
             simpMessagingTemplate.convertAndSend(
-                    "/sub/chat/workspace/" + department.getWorkspaceId(), "이미 존재하는 부서명입니다.");
+                    "/sub/chat/workspace/" + department.getWorkspaceId(), "이미 존재하는 부서입니다.");
             return ResponseEntity.badRequest().build();
         }
 
