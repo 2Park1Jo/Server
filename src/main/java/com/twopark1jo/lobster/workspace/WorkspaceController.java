@@ -58,7 +58,7 @@ public class WorkspaceController {
         return new ResponseEntity<>(workspaceList, HttpStatus.OK);
     }
 
-    private String getLocalDateTime(String format){
+    private String getLocalDateTime(){
         LocalDateTime date = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDateTime().withNano(0);
         DateTimeFormatter myPattern = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -80,7 +80,7 @@ public class WorkspaceController {
                 .departmentId(departmentId)
                 .email(null)
                 .content(memberName + "님이 채팅방에 참여하였습니다.")
-                .date(getLocalDateTime("yyyy-MM-dd HH:mm:ss"))
+                .date(getLocalDateTime())
                 .contentType("-1")
                 .link(null)
                 .build();
@@ -105,7 +105,7 @@ public class WorkspaceController {
         }
 
         workspace.setWorkspaceId(getTableId());
-        workspace.setCreationDate(getLocalDateTime("yyyy-MM-dd"));//워크스페이스 생성 시간
+        workspace.setCreationDate(getLocalDateTime());//워크스페이스 생성 시간
         workspaceRepository.save(workspace);        //워크스페이스 생성
 
         departmentId = workspace.getWorkspaceId();          //공지방 아이디 = 워크스페이스 아이디

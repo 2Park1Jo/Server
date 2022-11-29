@@ -21,7 +21,7 @@ public interface ChatContentRepository extends JpaRepository<ChatContent, String
     public List<String> findDepartmentIdAndChatCountByWorkspace(
             @Param("workspace_id") String workspaceId, @Param("email") String email);
 
-    @Query(value = "SELECT COUNT(chat_id) FROM chat_content where department_id=:department_id", nativeQuery = true)
+    @Query(value = "SELECT COUNT(chat_id) FROM chat_content WHERE department_id=:department_id AND email IS NOT NULL", nativeQuery = true)
     public String getMessageCount(@Param("department_id") String departmentId);
 
     @Query(value =
@@ -34,7 +34,8 @@ public interface ChatContentRepository extends JpaRepository<ChatContent, String
             , nativeQuery = true)
     public List<String> getListOfThreeMostChattedPeople(@Param("workspace_id") String workspaceId);
 
-    @Query(value = "SELECT email, department_name " +
+    @Query(value =
+            "SELECT email, department_name " +
             "FROM department JOIN department_member " +
             "ON department.department_id=department_member.department_id " +
             "WHERE workspace_id=:workspace_id", nativeQuery = true)
