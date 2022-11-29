@@ -1,5 +1,6 @@
 package com.twopark1jo.lobster.bucket;
 
+import com.twopark1jo.lobster.bucket.model.Bucket;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -27,4 +28,17 @@ public interface BucketRepository extends JpaRepository<Bucket, String> {
                 "GROUP BY department_id" +
             ")" , nativeQuery = true)
     List<Bucket> findAllBucketHistoryByWorkspace(@Param("workspace_id") String workspaceId);
+
+    @Query(value =
+            "SELECT email, member_name, count(*) FROM bucket " +
+            "WHERE workspace_id=:workspace_id " +
+            "GROUP BY email " +
+            "ORDER BY count(*) DESC LIMIT 3", nativeQuery = true)
+    List<String> getTopThreeMemberWithMostBucketUpdate(@Param("workspace_id") String workspaceId);
+
+    @Query(value =
+            "SELECT department_id, (SELECT department_name FROM department WHERE bucket.department_id=department.department_id) " +
+            "AS department_name, COUNT(*) FROM bucket WHERE workspace_id=:workspace_id " +
+            "GROUP BY department_id ORDER BY COUNT(*) DESC LIMIT 3", nativeQuery = true)
+    List<String> getTopThreeDepartmentWithMostBucketUpdate(@Param("workspace_id") String workspaceId);
 }

@@ -1,5 +1,6 @@
 package com.twopark1jo.lobster.bucket;
 
+import com.twopark1jo.lobster.bucket.model.Bucket;
 import com.twopark1jo.lobster.department.department.DepartmentRepository;
 import com.twopark1jo.lobster.utility.Constants;
 import lombok.RequiredArgsConstructor;
@@ -60,5 +61,13 @@ public class BucketServiceImpl implements BucketService{
         }
 
         return !Constants.IS_EXISTING_WORKSPACE;
+    }
+
+    public List<String> getListOfThreeMostCommittedBucket(String workspaceId){
+        return bucketRepository.getTopThreeMemberWithMostBucketUpdate(workspaceId);
+    }
+
+    public List<String> getTopThreeDepartmentWithMostBucketUpdate(String workspaceId){
+        return bucketRepository.getTopThreeDepartmentWithMostBucketUpdate(workspaceId);
     }
 }

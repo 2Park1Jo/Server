@@ -1,4 +1,4 @@
-package com.twopark1jo.lobster.bucket;
+package com.twopark1jo.lobster.bucket.model;
 
 import lombok.*;
 

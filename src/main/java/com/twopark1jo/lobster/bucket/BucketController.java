@@ -1,10 +1,14 @@
 package com.twopark1jo.lobster.bucket;
 
+import com.twopark1jo.lobster.bucket.model.Bucket;
+import com.twopark1jo.lobster.bucket.model.BucketByDepartment;
+import com.twopark1jo.lobster.bucket.model.BucketByMember;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -51,5 +55,39 @@ public class BucketController{
     @GetMapping("/workspace/department/{departmentId}/last-bucket-history")
     public Bucket getLastBucketHistoryByDepartment(@PathVariable String departmentId) {
         return bucketService.getLastBucketHistoryByDepartment(departmentId);
+    }
+
+    //버킷 최신화를 가장 많이 한 상위 3명의 회원
+    @GetMapping("/workspace/{workspaceId}/bucket/member/top-three-updates")
+    public List<BucketByMember> getListOfThreeMostCommittedBucket(@PathVariable String workspaceId){
+        List<String> bucketCommitList = bucketService.getListOfThreeMostCommittedBucket(workspaceId);
+        List<BucketByMember> bucketByMemberList = new ArrayList<>();
+        String bucketCommit[];
+        int size = bucketCommitList.size();
+
+        for(int index = 0; index < size; index++){
+            bucketCommit = bucketCommitList.get(index).split(",");
+
+            bucketByMemberList.add(new BucketByMember(bucketCommit[0], bucketCommit[1], bucketCommit[2]));
+        }
+
+        return bucketByMemberList;
+    }
+
+    //버킷 최신화를 가장 많이 한 상위 3개의 부서
+    @GetMapping("/workspace/{workspaceId}/bucket/department/top-three-updates")
+    public List<BucketByDepartment> getTopThreeDepartmentWithMostBucketUpdate(@PathVariable String workspaceId){
+        List<String> bucketCommitList = bucketService.getTopThreeDepartmentWithMostBucketUpdate(workspaceId);
+        List<BucketByDepartment> BucketByDepartmentList = new ArrayList<>();
+        String bucketCommit[];
+        int size = bucketCommitList.size();
+
+        for(int index = 0; index < size; index++){
+            bucketCommit = bucketCommitList.get(index).split(",");
+
+            BucketByDepartmentList.add(new BucketByDepartment(bucketCommit[0], bucketCommit[1], bucketCommit[2]));
+        }
+
+        return BucketByDepartmentList;
     }
 }
