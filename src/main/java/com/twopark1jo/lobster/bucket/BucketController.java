@@ -66,8 +66,8 @@ public class BucketController{
         int size = bucketCommitList.size();
 
         for(int index = 0; index < size; index++){
+            //[0] : 이메일, [1] : 회원 이름, [2] : 채팅수
             bucketCommit = bucketCommitList.get(index).split(",");
-
             bucketByMemberList.add(new BucketByMember(bucketCommit[0], bucketCommit[1], bucketCommit[2]));
         }
 
@@ -83,8 +83,8 @@ public class BucketController{
         int size = bucketCommitList.size();
 
         for(int index = 0; index < size; index++){
+            //[0] : 부서 아이디, [1] : 부서명, [2] : 채팅수
             bucketCommit = bucketCommitList.get(index).split(",");
-
             BucketByDepartmentList.add(new BucketByDepartment(bucketCommit[0], bucketCommit[1], bucketCommit[2]));
         }
 

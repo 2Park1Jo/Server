@@ -12,6 +12,9 @@ import javax.persistence.Entity;
 @ToString
 @Builder
 public class TopThreeChats {
+
+    private String email;
+
     private String memberName;
 
     private String departmentNameList;

@@ -335,7 +335,7 @@ public class StompChatController {
             topThreeChat = listOfThreeMostChattedPeopleFromDb.get(index).split(",");
             departmentNameList = getDepartmentNameListByMember(departmentNameMap, topThreeChat[0]);
 
-            listOfThreeMostChattedMember.add(new TopThreeChats(topThreeChat[1], departmentNameList, topThreeChat[2]));
+            listOfThreeMostChattedMember.add(new TopThreeChats(topThreeChat[0], topThreeChat[1], departmentNameList, topThreeChat[2]));
         }
 
         return listOfThreeMostChattedMember;

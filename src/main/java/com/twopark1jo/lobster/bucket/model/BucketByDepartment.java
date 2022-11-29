@@ -11,7 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class BucketByDepartment {
 
-    private String email;
+    private String departmentId;
 
     private String departmentName;
 
