@@ -74,8 +74,8 @@ public class BucketController{
         return bucketByMemberList;
     }
 
-    //버킷 최신화를 가장 많이 한 상위 3개의 부서
-    @GetMapping("/workspace/{workspaceId}/bucket/department/top-three-updates")
+    //버킷 최신화를 가장 많이한 부서
+    @GetMapping("/workspace/{workspaceId}/bucket/department/commit-count")
     public List<BucketByDepartment> getTopThreeDepartmentWithMostBucketUpdate(@PathVariable String workspaceId){
         List<String> bucketCommitList = bucketService.getTopThreeDepartmentWithMostBucketUpdate(workspaceId);
         List<BucketByDepartment> BucketByDepartmentList = new ArrayList<>();
