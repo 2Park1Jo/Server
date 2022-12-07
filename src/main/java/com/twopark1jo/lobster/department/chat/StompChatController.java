@@ -145,7 +145,6 @@ public class StompChatController {
     }
 
     @MessageMapping(value = "/chat/department/update")
-    @PostMapping("/test")
     public ResponseEntity updateDepartment(@RequestBody Department department){
         ChatContent chatContent;
 
@@ -175,10 +174,9 @@ public class StompChatController {
 
     //"/pub/chat/message" : 메세지 전송 -> "/sub/chat/department/{departmentId}"로 해당 채팅방으로 메세지 전달
     @MessageMapping(value = "/chat/message")
+    @PostMapping("/test")
     public void message(@RequestBody ChatContent chatContent) {
         String content;
-
-        System.out.println("chatMessage = " + chatContent.toString());
 
         content = Normalizer.normalize(chatContent.getContent(), Normalizer.Form.NFC);  //윈도우, 맥 자소분리 합치기
 
@@ -186,6 +184,7 @@ public class StompChatController {
         chatContent.setSender(memberService.getMemberName(chatContent.getEmail()));   //채팅을 보낸 회원의 이름
 
         chatContentRepository.save(chatContent);  //채팅내용 저장
+        System.out.println("chatContent = " + chatContent.toString());
 
         simpMessagingTemplate.convertAndSend("/sub/chat/department/" + chatContent.getDepartmentId(), chatContent);
     }
