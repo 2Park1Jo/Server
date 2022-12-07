@@ -181,7 +181,9 @@ public class StompChatController {
         System.out.println("chatMessage = " + chatContent.toString());
 
         content = Normalizer.normalize(chatContent.getContent(), Normalizer.Form.NFC);  //윈도우, 맥 자소분리 합치기
-        chatContent.setContent(content);
+
+        chatContent.setContent(content);          //채팅 내용
+        chatContent.setSender(memberService.getMemberName(chatContent.getEmail()));   //채팅을 보낸 회원의 이름
 
         chatContentRepository.save(chatContent);  //채팅내용 저장
 
