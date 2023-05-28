@@ -28,8 +28,9 @@ public class PapagoAPI {
 
     @GetMapping("/translation")
     public ResponseEntity<String> translate(@RequestBody TranslationForm translationForm){
+        System.out.println("RequestBody: " + translationForm.toString());
+        System.out.println("key: " + NAVER_CLIENT_ID + "/" + NAVER_CLIENT_SECRET);
         String translatedText = run(translationForm);
-
         try {
             return new ResponseEntity<String>(translatedText, HttpStatus.OK);
         } catch (RuntimeException e) {
