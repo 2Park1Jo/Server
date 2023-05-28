@@ -26,6 +26,9 @@ public class ChatContent {
     @Column(name = "email")
     private String email;         //회원 이메일
 
+    @Column(name = "sender")
+    private String sender;         //회원 이름
+
     @Column(name = "content")
     private String content;       //대화내용
 

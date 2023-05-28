@@ -1,17 +1,11 @@
 package com.twopark1jo.lobster;
 
-import com.twopark1jo.lobster.department.chat.ChatContentRepository;
-import com.twopark1jo.lobster.member.MemberRepository;
+import com.twopark1jo.lobster.translation.PapagoAPI;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
+import org.springframework.context.annotation.PropertySource;
 
 @SpringBootApplication
 @RequiredArgsConstructor
