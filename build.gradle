@@ -6,7 +6,7 @@ plugins {
 
 group = 'com.twopark1jo'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '11'
+sourceCompatibility = '1.8'
 
 configurations {
 	compileOnly {
@@ -35,6 +35,9 @@ dependencies {
 	//jwt
 	runtimeOnly 'com.h2database:h2'
 	testImplementation 'org.springframework.security:spring-security-test'
+
+	//json parsing
+	implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
 }
 
 tasks.named('test') {
